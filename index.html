@@ -3560,14 +3560,46 @@ function oosCacheSnapshot(snapshot){
 }
 async function oosWriteCloud(snapshot){
   if(!oosCurrentUser) throw new Error('Not authenticated');
-  const payload=JSON.parse(JSON.stringify(snapshot));
-  payload.updatedBy=oosCurrentUser.uid;
-  payload.updatedAt=firebase.firestore.FieldValue.serverTimestamp();
+
+  /*
+     FIRESTORE PAYLOAD SAFETY
+     ------------------------
+     The dashboard contains browser-side objects (Date values, nested customer
+     records, logos, etc.). Firestore supports many native value types, but the
+     safest way to store this single-dashboard state is to serialize the complete
+     snapshot to a plain JSON string. This prevents Firestore from interpreting
+     any nested browser/entity object as a Firestore entity and fixes:
+       "Property dashboard contains an invalid nested entity."
+  */
+  let stateJson;
+  try{
+    stateJson = JSON.stringify(snapshot);
+  }catch(err){
+    throw new Error('Dashboard data could not be converted to a cloud-safe format: ' + (err.message || err));
+  }
+
+  // Firestore documents have a 1 MiB maximum size. Leave headroom for metadata.
+  if(stateJson.length > 900000){
+    throw new Error('Dashboard data is too large for one Firestore document. Reduce stored logo/image data before saving.');
+  }
+
+  const payload={
+    version:3,
+    savedAt:snapshot.savedAt,
+    stateJson,
+    updatedBy:oosCurrentUser.uid,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+
   await OOS_DOC_REF.set(payload);
+
+  // Verify against the server, not the browser cache.
   const verified=await OOS_DOC_REF.get({source:'server'});
   if(!verified.exists) throw new Error('Firestore write completed but the document could not be verified.');
   const serverData=verified.data()||{};
   if(serverData.savedAt!==snapshot.savedAt) throw new Error('Firestore returned a different save revision; the latest change was not verified.');
+  if(typeof serverData.stateJson!=='string') throw new Error('Firestore saved the document, but the dashboard state payload is missing.');
+  if(serverData.stateJson!==stateJson) throw new Error('Firestore verification failed: the saved dashboard state does not match the latest change.');
   return true;
 }
 function oosQueueCloudSave(reason='change'){
@@ -3668,11 +3700,42 @@ async function oosLoadFromCloud(){
     const snap=await OOS_DOC_REF.get({source:'server'});
     if(snap.exists){
       const data=snap.data()||{};
-      if(data.dashboard)localStorage.setItem('outofsight_dashboard_state',JSON.stringify(data.dashboard));
-      if(data.notes)localStorage.setItem('outofsight_notes',JSON.stringify(data.notes));
-      if(data.tasks)localStorage.setItem('outofsight_tasks',JSON.stringify(data.tasks));
-      if(data.calendar)localStorage.setItem('outofsight_calendar',JSON.stringify(data.calendar));
-      if(Array.isArray(data.analytics)){try{const map={};data.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));}catch(e){}}
+
+      // New format: the entire dashboard snapshot is stored as a plain JSON string.
+      if(typeof data.stateJson==='string' && data.stateJson){
+        let cloudSnapshot;
+        try{
+          cloudSnapshot=JSON.parse(data.stateJson);
+        }catch(parseErr){
+          throw new Error('Firestore contains a dashboard state that cannot be read as JSON.');
+        }
+        if(cloudSnapshot.dashboard) localStorage.setItem('outofsight_dashboard_state',JSON.stringify(cloudSnapshot.dashboard));
+        if(cloudSnapshot.notes) localStorage.setItem('outofsight_notes',JSON.stringify(cloudSnapshot.notes));
+        if(cloudSnapshot.tasks) localStorage.setItem('outofsight_tasks',JSON.stringify(cloudSnapshot.tasks));
+        if(cloudSnapshot.calendar) localStorage.setItem('outofsight_calendar',JSON.stringify(cloudSnapshot.calendar));
+        if(Array.isArray(cloudSnapshot.analytics)){
+          try{
+            const map={};
+            cloudSnapshot.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});
+            localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));
+          }catch(e){}
+        }
+      }else{
+        // Backward compatibility with the previous nested Firestore format.
+        // Read it once, then the next successful save automatically migrates it
+        // to the safer stateJson format above.
+        if(data.dashboard)localStorage.setItem('outofsight_dashboard_state',JSON.stringify(data.dashboard));
+        if(data.notes)localStorage.setItem('outofsight_notes',JSON.stringify(data.notes));
+        if(data.tasks)localStorage.setItem('outofsight_tasks',JSON.stringify(data.tasks));
+        if(data.calendar)localStorage.setItem('outofsight_calendar',JSON.stringify(data.calendar));
+        if(Array.isArray(data.analytics)){
+          try{
+            const map={};
+            data.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});
+            localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));
+          }catch(e){}
+        }
+      }
       loadDashboardState();
     }else{
       const initialSnapshot=oosBuildSnapshot();
