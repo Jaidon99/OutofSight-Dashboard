@@ -3598,18 +3598,57 @@ setInterval(()=>{if(document.visibilityState==='visible'&&oosUnlocked&&oosCurren
 let oosUnlocked=false;let oosCreateMode=false;let oosCurrentUser=null;
 const OOS_DOC_REF=oosDb.collection('dashboard').doc('state');
 const OOS_ALLOWED_EMAILS=['hallo.outofsight@gmail.com','jaidonvermeulen@gmail.com'];
-function oosStatus(msg,type=''){const el=document.getElementById('securityStatus');if(el){el.textContent=msg;el.className='security-status '+type;}}
+function oosStatus(msg,type=''){const el=document.getElementById('securityStatus');if(el){el.textContent=msg;el.className='security-status '+type;el.style.whiteSpace='pre-line';}}
 function oosToggleCreate(){
   oosCreateMode=!oosCreateMode;const btn=document.querySelector('.security-unlock');const alt=document.querySelector('.security-alt');
   if(oosCreateMode){btn.textContent='Create Account';alt.textContent='Already have an account? Sign in';oosStatus('Set a password (6+ characters) and create your account.','');}
   else{btn.textContent='Sign In';alt.textContent='First time here? Create account';oosStatus('','');}
 }
+function oosFriendlyFirebaseError(err, stage='authentication'){
+  const code=err&&err.code?err.code:'';
+  const raw=err&&err.message?err.message:'';
+  const clean=raw.replace(/^Firebase:\s*/i,'').replace(/\s*\(auth\/[^)]+\)\.?$/i,'').trim();
+  const map={
+    'auth/invalid-credential':'The email or password is incorrect.',
+    'auth/wrong-password':'The password is incorrect.',
+    'auth/user-not-found':'No Firebase account exists for this email.',
+    'auth/user-disabled':'This Firebase account has been disabled.',
+    'auth/too-many-requests':'Too many login attempts. Please wait a moment and try again.',
+    'auth/network-request-failed':'Firebase could not connect to the internet. Check your connection and try again.',
+    'auth/operation-not-allowed':'Email/password sign-in is not enabled in Firebase Authentication.',
+    'auth/email-already-in-use':'This email already has a Firebase account. Switch to “Sign In” instead of creating another account.',
+    'permission-denied':'Firebase Authentication succeeded, but Firestore denied access to dashboard/state. Deploy the Firestore rules for the outofsight-dashboard project.',
+    'failed-precondition':'Firestore is not ready for this request. Check that Firestore is enabled and the default database exists.',
+    'unavailable':'Firestore is temporarily unavailable or the browser cannot reach Firebase.',
+    'unauthenticated':'Firebase says the session is not authenticated. Please sign in again.'
+  };
+  const detail=map[code] || clean || `Firebase ${stage} failed.`;
+  return code ? `${detail} [${code}]` : detail;
+}
+
 async function oosSignIn(){
-  const email=(document.getElementById('authEmail')?.value||'').trim();const pass=(document.getElementById('authPassword')?.value||'').trim();
+  const email=(document.getElementById('authEmail')?.value||'').trim().toLowerCase();
+  const pass=(document.getElementById('authPassword')?.value||'').trim();
   if(!email||!pass){oosStatus('Enter your email and password.','error');return;}
-  if(!OOS_ALLOWED_EMAILS.includes(email.toLowerCase())){oosStatus('This dashboard is restricted to authorized OutofSight accounts only.','error');return;}
+  if(!OOS_ALLOWED_EMAILS.includes(email)){oosStatus('This dashboard is restricted to authorized OutofSight accounts only.','error');return;}
   oosStatus(oosCreateMode?'Creating account…':'Signing in…','');
-  try{if(oosCreateMode)await oosAuth.createUserWithEmailAndPassword(email,pass);else await oosAuth.signInWithEmailAndPassword(email,pass);}catch(err){oosStatus(err.message||'Authentication failed.','error');}
+  try{
+    if(oosCreateMode){
+      await oosAuth.createUserWithEmailAndPassword(email,pass);
+    }else{
+      await oosAuth.signInWithEmailAndPassword(email,pass);
+    }
+  }catch(err){
+    console.error('OutofSight authentication error:',err);
+    if(oosCreateMode && err && err.code==='auth/email-already-in-use'){
+      oosCreateMode=false;
+      const btn=document.querySelector('.security-unlock');
+      const alt=document.querySelector('.security-alt');
+      if(btn)btn.textContent='Sign In';
+      if(alt)alt.textContent='First time here? Create account';
+    }
+    oosStatus(oosFriendlyFirebaseError(err,'authentication'),'error');
+  }
 }
 document.getElementById('authPassword')?.addEventListener('keydown',e=>{if(e.key==='Enter')oosSignIn();});
 document.getElementById('authEmail')?.addEventListener('keydown',e=>{if(e.key==='Enter')oosSignIn();});
@@ -3625,7 +3664,8 @@ async function oosLockDashboard(){
 }
 async function oosLoadFromCloud(){
   try{
-    oosSetSaveStatus('saving','Loading from cloud…');const snap=await OOS_DOC_REF.get({source:'server'});
+    oosSetSaveStatus('saving','Checking cloud connection…');
+    const snap=await OOS_DOC_REF.get({source:'server'});
     if(snap.exists){
       const data=snap.data()||{};
       if(data.dashboard)localStorage.setItem('outofsight_dashboard_state',JSON.stringify(data.dashboard));
@@ -3634,16 +3674,61 @@ async function oosLoadFromCloud(){
       if(data.calendar)localStorage.setItem('outofsight_calendar',JSON.stringify(data.calendar));
       if(Array.isArray(data.analytics)){try{const map={};data.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));}catch(e){}}
       loadDashboardState();
-    }else{const initialSnapshot=oosBuildSnapshot();oosCacheSnapshot(initialSnapshot);await oosWriteCloud(initialSnapshot);}
-    renderAll();if(typeof renderNotes==='function')renderNotes();if(typeof renderCalendar==='function')renderCalendar();if(typeof renderTasksPanel==='function')renderTasksPanel();if(typeof renderTasksPage==='function')renderTasksPage();if(typeof loadGaLookerUrls==='function')loadGaLookerUrls();oosSetSaveStatus('ok','Cloud saved');
-  }catch(err){console.error('OutofSight cloud load failed:',err);const code=err&&err.code?` (${err.code})`:'';oosSetSaveStatus('error',`CLOUD SYNC FAILED${code}`);throw err;}
+    }else{
+      const initialSnapshot=oosBuildSnapshot();
+      oosCacheSnapshot(initialSnapshot);
+      await oosWriteCloud(initialSnapshot);
+    }
+    renderAll();
+    if(typeof renderNotes==='function')renderNotes();
+    if(typeof renderCalendar==='function')renderCalendar();
+    if(typeof renderTasksPanel==='function')renderTasksPanel();
+    if(typeof renderTasksPage==='function')renderTasksPage();
+    if(typeof loadGaLookerUrls==='function')loadGaLookerUrls();
+    oosSetSaveStatus('ok','Cloud connected');
+    return true;
+  }catch(err){
+    console.error('OutofSight cloud load failed:',err);
+    const message=oosFriendlyFirebaseError(err,'cloud connection');
+    oosSetSaveStatus('error','CLOUD CONNECTION FAILED');
+    throw Object.assign(new Error(message),{code:err&&err.code?err.code:'cloud-sync-failed',originalError:err});
+  }
 }
+
 oosAuth.onAuthStateChanged(async user=>{
-  if(user){
-    if(!OOS_ALLOWED_EMAILS.includes((user.email||'').toLowerCase())){oosStatus('This dashboard is restricted to authorized OutofSight accounts only.','error');await oosAuth.signOut();return;}
-    oosCurrentUser=user;
-    try{await oosLoadFromCloud();unlockDashboard('Signed in as '+user.email);}catch(err){oosUnlocked=false;oosCurrentUser=null;oosStatus('Cloud connection failed. Check Firestore Security Rules before unlocking the dashboard.','error');try{await oosAuth.signOut();}catch(e){}}
-  }else{oosCurrentUser=null;}
+  if(!user){
+    oosCurrentUser=null;
+    oosUnlocked=false;
+    document.body.classList.add('locked');
+    const gate=document.getElementById('securityGate');
+    if(gate)gate.style.display='flex';
+    return;
+  }
+
+  const email=(user.email||'').toLowerCase();
+  if(!OOS_ALLOWED_EMAILS.includes(email)){
+    oosCurrentUser=null;oosUnlocked=false;
+    oosStatus('This dashboard is restricted to authorized OutofSight accounts only.','error');
+    try{await oosAuth.signOut();}catch(e){}
+    return;
+  }
+
+  // Authentication has succeeded. Keep the session alive while we test Firestore.
+  // IMPORTANT: do NOT sign the user out when Firestore rules reject the request.
+  // The error is shown clearly so the rules can be fixed without hiding the real cause.
+  oosCurrentUser=user;
+  oosStatus('Authentication successful. Connecting to cloud…','');
+  try{
+    await oosLoadFromCloud();
+    unlockDashboard('Signed in as '+user.email+' • Cloud connected');
+  }catch(err){
+    oosUnlocked=false;
+    document.body.classList.add('locked');
+    const gate=document.getElementById('securityGate');
+    if(gate)gate.style.display='flex';
+    oosStatus(`LOGIN SUCCESSFUL — CLOUD CONNECTION FAILED\n${err.message}`,'error');
+    // Stay authenticated so the user can retry after Firestore Rules are corrected.
+  }
 });
 
 </script>
