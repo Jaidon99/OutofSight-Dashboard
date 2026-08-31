@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /dashboard/state {
+      allow read, write: if request.auth != null
+        && (request.auth.token.email == 'hallo.outofsight@gmail.com'
+            || request.auth.token.email == 'jaidonvermeulen@gmail.com');
+    }
+
+    // Everything else remains private until we explicitly add a rule for it.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
