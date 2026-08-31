@@ -1228,7 +1228,27 @@ body.locked .app{display:none !important}
 .autosave-indicator.saving .autosave-dot{background:var(--gold);box-shadow:0 0 8px var(--gold)}
 .autosave-indicator.error .autosave-dot{background:var(--red-neon);box-shadow:0 0 8px var(--red-neon)}
 @media(max-width:640px){.security-card{padding:28px 20px}.security-logo{width:180px}.security-title{font-size:21px}.autosave-indicator{right:10px;bottom:10px}}
+.security-field{width:100%;height:48px;text-align:left;padding:0 16px;font-family:var(--font-sans,inherit);font-size:14px;background:rgba(255,255,255,.045)!important;border:1px solid rgba(255,255,255,.11)!important;border-radius:12px!important;color:#fff!important;margin:0 0 10px!important}
+.security-field:focus{border-color:rgba(51,168,255,.65)!important;box-shadow:0 0 0 4px rgba(51,168,255,.08);outline:none}
+.security-alt{width:100%;height:40px;margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:12px;color:var(--text-dim);font-weight:600;font-size:12px}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script>
+  const oosFirebaseConfig = {
+    apiKey: "AIzaSyBPDlhJcZzPZJMTgS_NyosU7XAWfvT4-qY",
+    authDomain: "outofsight-dashboard.firebaseapp.com",
+    projectId: "outofsight-dashboard",
+    storageBucket: "outofsight-dashboard.firebasestorage.app",
+    messagingSenderId: "317718569031",
+    appId: "1:317718569031:web:d6634a4950b96df9c69162",
+    measurementId: "G-V7PCD697RE"
+  };
+  firebase.initializeApp(oosFirebaseConfig);
+  const oosAuth = firebase.auth();
+  const oosDb = firebase.firestore();
+</script>
 </head>
 
 <body class="locked">
@@ -1239,9 +1259,11 @@ body.locked .app{display:none !important}
     <img class="security-logo" src="outofsight-logo.png" alt="OutofSight">
     <div class="security-eyebrow">SECURE COMMAND CENTER</div>
     <h1 class="security-title">OutofSight Dashboard</h1>
-    <p class="security-sub">Enter your 5-digit access code to continue to the secure dashboard.</p>
-    <input id="securityCode" class="security-code" type="password" inputmode="numeric" autocomplete="current-password" maxlength="5" placeholder="•••••" aria-label="Dashboard access code">
-    <button class="security-unlock" type="button" onclick="unlockWithCode()">Unlock Dashboard</button>
+    <p class="security-sub">Sign in with your OutofSight account to continue.</p>
+    <input id="authEmail" class="security-field" type="email" autocomplete="username" placeholder="Email" aria-label="Email">
+    <input id="authPassword" class="security-field" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
+    <button class="security-unlock" type="button" onclick="oosSignIn()">Sign In</button>
+    <button class="security-alt" type="button" onclick="oosToggleCreate()">First time here? Create account</button>
     <div id="securityStatus" class="security-status" style="margin-top:13px;min-height:20px;font-size:11.5px;color:var(--text-dim)"></div>
   </div>
 </div>
@@ -3499,11 +3521,18 @@ function oosBuildSnapshot(){
 function oosAutoSaveNow(){
   try{
     oosSetSaveStatus('saving','Saving…');
-    localStorage.setItem(OOS_AUTOSAVE_KEY,JSON.stringify(oosBuildSnapshot()));
+    const snapshot = oosBuildSnapshot();
+    localStorage.setItem(OOS_AUTOSAVE_KEY,JSON.stringify(snapshot));
     saveDashboardState();
     if(typeof saveNotes==='function') saveNotes();
     if(typeof saveTasks==='function') saveTasks();
-    oosSetSaveStatus('ok','All changes saved');
+    if(oosCurrentUser){
+      OOS_DOC_REF.set(JSON.parse(JSON.stringify(snapshot)))
+        .then(()=>oosSetSaveStatus('ok','All changes saved'))
+        .catch(err=>{console.error('OutofSight cloud save failed',err);oosSetSaveStatus('error','Cloud save failed — saved locally');});
+    } else {
+      oosSetSaveStatus('ok','All changes saved (offline)');
+    }
   }catch(err){console.error('OutofSight auto-save failed',err);oosSetSaveStatus('error','Save failed — storage full');}
 }
 function oosScheduleAutoSave(){clearTimeout(oosAutosaveTimer);oosSetSaveStatus('saving','Saving…');oosAutosaveTimer=setTimeout(oosAutoSaveNow,250);}
@@ -3513,22 +3542,110 @@ window.addEventListener('beforeunload',oosAutoSaveNow);
 window.addEventListener('pagehide',oosAutoSaveNow);
 setInterval(()=>{if(document.visibilityState==='visible')oosAutoSaveNow();},15000);
 
-/* SECURITY GATE */
+/* SECURITY GATE — Firebase Authentication + Firestore sync */
 let oosUnlocked=false;
-const OOS_ACCESS_CODE_SHA256='f5e59610f6b9fef75e2c42a497e865c989df4c38ae0cc4527e62e1d4f4d9d711';
-async function oosSha256(value){const data=new TextEncoder().encode(value);const hash=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+let oosCreateMode=false;
+let oosCurrentUser=null;
+const OOS_DOC_REF = oosDb.collection('dashboard').doc('state');
+const OOS_ALLOWED_EMAILS = ['hallo.outofsight@gmail.com','jaidonvermeulen@gmail.com'];
+
 function oosStatus(msg,type=''){const el=document.getElementById('securityStatus');if(el){el.textContent=msg;el.className='security-status '+type;}}
-async function unlockWithCode(){
-  const input=document.getElementById('securityCode'), code=(input?.value||'').trim();
-  if(code.length!==5){oosStatus('Enter the 5-digit access code.','error');return;}
-  if((await oosSha256(code))===OOS_ACCESS_CODE_SHA256){unlockDashboard('Access code accepted.');}else{input.value='';oosStatus('Incorrect access code.','error');}
+
+function oosToggleCreate(){
+  oosCreateMode = !oosCreateMode;
+  const btn = document.querySelector('.security-unlock');
+  const alt = document.querySelector('.security-alt');
+  if(oosCreateMode){
+    btn.textContent = 'Create Account';
+    alt.textContent = 'Already have an account? Sign in';
+    oosStatus('Set a password (6+ characters) and create your account.', '');
+  } else {
+    btn.textContent = 'Sign In';
+    alt.textContent = 'First time here? Create account';
+    oosStatus('', '');
+  }
 }
+
+async function oosSignIn(){
+  const email = (document.getElementById('authEmail')?.value || '').trim();
+  const pass = (document.getElementById('authPassword')?.value || '').trim();
+  if(!email || !pass){ oosStatus('Enter your email and password.', 'error'); return; }
+  if(!OOS_ALLOWED_EMAILS.includes(email.toLowerCase())){
+    oosStatus('This dashboard is restricted to authorized OutofSight accounts only.', 'error');
+    return;
+  }
+  oosStatus(oosCreateMode ? 'Creating account…' : 'Signing in…', '');
+  try{
+    if(oosCreateMode){
+      await oosAuth.createUserWithEmailAndPassword(email, pass);
+    } else {
+      await oosAuth.signInWithEmailAndPassword(email, pass);
+    }
+    // onAuthStateChanged below handles the unlock + cloud load
+  }catch(err){
+    oosStatus(err.message || 'Authentication failed.', 'error');
+  }
+}
+
+document.getElementById('authPassword')?.addEventListener('keydown', e=>{ if(e.key==='Enter') oosSignIn(); });
+document.getElementById('authEmail')?.addEventListener('keydown', e=>{ if(e.key==='Enter') oosSignIn(); });
+
 function unlockDashboard(message){
   oosUnlocked=true;document.body.classList.remove('locked');
   const gate=document.getElementById('securityGate');if(gate)gate.style.display='none';
   oosStatus(message,'ok');setTimeout(()=>oosSetSaveStatus('ok','All changes saved'),250);
 }
-document.getElementById('securityCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')unlockWithCode();});
+
+/* Pull the shared dashboard state from Firestore and refresh every page */
+async function oosLoadFromCloud(){
+  try{
+    oosSetSaveStatus('saving','Syncing…');
+    const snap = await OOS_DOC_REF.get();
+    if(snap.exists){
+      const data = snap.data() || {};
+      if(data.dashboard) localStorage.setItem('outofsight_dashboard_state', JSON.stringify(data.dashboard));
+      if(data.notes) localStorage.setItem('outofsight_notes', JSON.stringify(data.notes));
+      if(data.tasks) localStorage.setItem('outofsight_tasks', JSON.stringify(data.tasks));
+      if(data.calendar) localStorage.setItem('outofsight_calendar', JSON.stringify(data.calendar));
+      if(Array.isArray(data.analytics)){
+        try{
+          const map = {};
+          data.analytics.forEach(a=>{ if(a && a.name) map[a.name] = a.lookerUrl || ''; });
+          localStorage.setItem('outofsight_ga_looker_urls', JSON.stringify(map));
+        }catch(e){}
+      }
+      loadDashboardState();
+    } else {
+      // No cloud data yet — push whatever we have locally (seed/demo) as the first version
+      await OOS_DOC_REF.set(JSON.parse(JSON.stringify(oosBuildSnapshot())));
+    }
+    renderAll();
+    if(typeof renderNotes==='function') renderNotes();
+    if(typeof renderCalendar==='function') renderCalendar();
+    if(typeof renderTasksPanel==='function') renderTasksPanel();
+    if(typeof renderTasksPage==='function') renderTasksPage();
+    if(typeof loadGaLookerUrls==='function') loadGaLookerUrls();
+    oosSetSaveStatus('ok','All changes saved');
+  }catch(err){
+    console.error('OutofSight cloud load failed', err);
+    oosSetSaveStatus('error','Cloud sync failed — working offline');
+  }
+}
+
+oosAuth.onAuthStateChanged(async user=>{
+  if(user){
+    if(!OOS_ALLOWED_EMAILS.includes((user.email||'').toLowerCase())){
+      oosStatus('This dashboard is restricted to authorized OutofSight accounts only.', 'error');
+      await oosAuth.signOut();
+      return;
+    }
+    oosCurrentUser = user;
+    await oosLoadFromCloud();
+    unlockDashboard('Signed in as ' + user.email);
+  } else {
+    oosCurrentUser = null;
+  }
+});
 
 </script>
 
