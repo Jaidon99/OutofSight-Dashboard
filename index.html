@@ -1247,6 +1247,8 @@ body.locked .app{display:none !important}
   };
   firebase.initializeApp(oosFirebaseConfig);
   const oosAuth = firebase.auth();
+  // Ask for sign-in every time the dashboard is opened (session-only persistence)
+  oosAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(err=>console.error('OutofSight persistence setting failed', err));
   const oosDb = firebase.firestore();
 </script>
 </head>
