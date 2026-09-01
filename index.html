@@ -1271,11 +1271,9 @@ body.locked .app{display:none !important}
     <img class="security-logo" src="outofsight-logo.png" alt="OutofSight">
     <div class="security-eyebrow">SECURE COMMAND CENTER</div>
     <h1 class="security-title">OutofSight Dashboard</h1>
-    <p class="security-sub">Sign in with your OutofSight account to continue.</p>
-    <input id="authEmail" class="security-field" type="email" autocomplete="username" placeholder="Email" aria-label="Email">
+    <p class="security-sub">Enter the dashboard password to continue.</p>
     <input id="authPassword" class="security-field" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
     <button class="security-unlock" type="button" onclick="oosSignIn()">Sign In</button>
-    <button class="security-alt" type="button" onclick="oosToggleCreate()">First time here? Create account</button>
     <div id="securityStatus" class="security-status" style="margin-top:13px;min-height:20px;font-size:11.5px;color:var(--text-dim)"></div>
   </div>
 </div>
@@ -3240,6 +3238,29 @@ const OOS_LOGO_HUDINI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAA7C
    Workspaces — one card per client, built from clients/projects/orders
    ------------------------- */
 
+// The three built-in customer logos (OutofSight / IridescenceSA / Hudini)
+// are large embedded base64 images baked into this file already -- they
+// never change and don't need to be re-uploaded to Firestore on every save.
+// Sending them each time was the main reason snapshots blew past Firestore's
+// 1 MiB document limit ("Dashboard data is too large..."). We strip them out
+// before syncing and restore them from these constants whenever the
+// dashboard loads (see oosReattachDefaultLogos). Custom/uploaded customer
+// logos are untouched and still sync normally.
+const OOS_DEFAULT_LOGOS={'OutofSight':OOS_LOGO_OUTOFSIGHT,'IridescenceSA':OOS_LOGO_IRIDESCENCE,'Hudini Plumbing':OOS_LOGO_HUDINI};
+function oosReattachDefaultLogos(list){
+  if(!Array.isArray(list)) return list;
+  list.forEach(c=>{ if(c && !c.logo && OOS_DEFAULT_LOGOS[c.name]) c.logo=OOS_DEFAULT_LOGOS[c.name]; });
+  return list;
+}
+function oosStripDefaultLogosForSync(list){
+  if(!Array.isArray(list)) return list;
+  return list.map(c=>{
+    if(c && c.logo && OOS_DEFAULT_LOGOS[c.name] && c.logo===OOS_DEFAULT_LOGOS[c.name]){
+      return Object.assign({}, c, {logo:''});
+    }
+    return c;
+  });
+}
 let dashboardCustomers = [
  {name:'OutofSight', website:'https://ooscu.com', services:'Internal systems & digital growth', phone:'', email:'', notes:'', logo:OOS_LOGO_OUTOFSIGHT},
  {name:'IridescenceSA', website:'https://iridescencesa.co.za', services:'Website & digital services', phone:'', email:'', notes:'', logo:OOS_LOGO_IRIDESCENCE},
@@ -3511,7 +3532,7 @@ function loadDashboardState(){
     clients = new Set(state.clients||[]);
     window.clientMeta = state.clientMeta || {};
     monthlyTarget = typeof state.monthlyTarget === 'number' ? state.monthlyTarget : monthlyTarget;
-    if(Array.isArray(state.dashboardCustomers)) dashboardCustomers = state.dashboardCustomers;
+    if(Array.isArray(state.dashboardCustomers)) dashboardCustomers = oosReattachDefaultLogos(state.dashboardCustomers);
     return (orders.length>0 || projects.length>0 || clients.size>0);
   }catch(e){ return false; }
 }
@@ -3553,7 +3574,7 @@ function oosSetSaveStatus(state, text){
   label.textContent=text;
 }
 function oosBuildSnapshot(){
-  return {version:3,savedAt:new Date().toISOString(),dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,dashboardCustomers},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
+  return {version:3,savedAt:new Date().toISOString(),dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,dashboardCustomers:oosStripDefaultLogosForSync(dashboardCustomers)},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
 }
 function oosCacheSnapshot(snapshot){
   try{localStorage.setItem(OOS_AUTOSAVE_KEY,JSON.stringify(snapshot));saveDashboardState();if(typeof saveNotes==='function')saveNotes();if(typeof saveTasks==='function')saveTasks();}catch(err){console.error('OutofSight local cache failed',err);}
@@ -3628,14 +3649,17 @@ setInterval(()=>{if(document.visibilityState==='visible'&&oosUnlocked&&oosCurren
 
 /* SECURITY GATE — Firebase Authentication + Firestore sync */
 let oosUnlocked=false;let oosCreateMode=false;let oosCurrentUser=null;
-const OOS_DOC_REF=oosDb.collection('dashboard').doc('state');
+const OOS_DOC_REF=oosDb.collection('dashboard').doc('cloudState');
+const OOS_CLOUD_PATH='dashboard/cloudState';
 const OOS_ALLOWED_EMAILS=['hallo.outofsight@gmail.com','jaidonvermeulen@gmail.com'];
+// Password-only sign-in: the visible screen only asks for the shared dashboard
+// password. Behind the scenes we still authenticate with a real Firebase
+// Authentication account (email/password) so the existing Firestore
+// security rules -- which check request.auth.token.email -- keep working
+// unmodified. Whichever of the allowed accounts matches the entered
+// password is used.
+const OOS_LOGIN_EMAILS=['jaidonvermeulen@gmail.com','hallo.outofsight@gmail.com'];
 function oosStatus(msg,type=''){const el=document.getElementById('securityStatus');if(el){el.textContent=msg;el.className='security-status '+type;el.style.whiteSpace='pre-line';}}
-function oosToggleCreate(){
-  oosCreateMode=!oosCreateMode;const btn=document.querySelector('.security-unlock');const alt=document.querySelector('.security-alt');
-  if(oosCreateMode){btn.textContent='Create Account';alt.textContent='Already have an account? Sign in';oosStatus('Set a password (6+ characters) and create your account.','');}
-  else{btn.textContent='Sign In';alt.textContent='First time here? Create account';oosStatus('','');}
-}
 function oosFriendlyFirebaseError(err, stage='authentication'){
   const code=err&&err.code?err.code:'';
   const raw=err&&err.message?err.message:'';
@@ -3659,39 +3683,36 @@ function oosFriendlyFirebaseError(err, stage='authentication'){
 }
 
 async function oosSignIn(){
-  const email=(document.getElementById('authEmail')?.value||'').trim().toLowerCase();
   const pass=(document.getElementById('authPassword')?.value||'').trim();
-  if(!email||!pass){oosStatus('Enter your email and password.','error');return;}
-  if(!OOS_ALLOWED_EMAILS.includes(email)){oosStatus('This dashboard is restricted to authorized OutofSight accounts only.','error');return;}
-  oosStatus(oosCreateMode?'Creating account…':'Signing in…','');
-  try{
-    if(oosCreateMode){
-      await oosAuth.createUserWithEmailAndPassword(email,pass);
-    }else{
+  if(!pass){oosStatus('Enter the dashboard password.','error');return;}
+  oosStatus('Signing in…','');
+  let lastErr=null;
+  for(const email of OOS_LOGIN_EMAILS){
+    try{
       await oosAuth.signInWithEmailAndPassword(email,pass);
+      return; // success — onAuthStateChanged takes over from here
+    }catch(err){
+      lastErr=err;
+      // Wrong password / no such user for THIS account -> try the next one.
+      // Any other error (network, too-many-requests, etc.) should stop immediately.
+      const code=err&&err.code?err.code:'';
+      if(code!=='auth/invalid-credential' && code!=='auth/wrong-password' && code!=='auth/user-not-found'){
+        break;
+      }
     }
-  }catch(err){
-    console.error('OutofSight authentication error:',err);
-    if(oosCreateMode && err && err.code==='auth/email-already-in-use'){
-      oosCreateMode=false;
-      const btn=document.querySelector('.security-unlock');
-      const alt=document.querySelector('.security-alt');
-      if(btn)btn.textContent='Sign In';
-      if(alt)alt.textContent='First time here? Create account';
-    }
-    oosStatus(oosFriendlyFirebaseError(err,'authentication'),'error');
   }
+  console.error('OutofSight authentication error:',lastErr);
+  oosStatus('Incorrect password.','error');
 }
 document.getElementById('authPassword')?.addEventListener('keydown',e=>{if(e.key==='Enter')oosSignIn();});
-document.getElementById('authEmail')?.addEventListener('keydown',e=>{if(e.key==='Enter')oosSignIn();});
 function unlockDashboard(message){oosUnlocked=true;document.body.classList.remove('locked');const gate=document.getElementById('securityGate');if(gate)gate.style.display='none';oosStatus(message,'ok');oosSetSaveStatus('saving','Cloud sync ready…');}
 async function oosLockDashboard(){
   if(!oosCurrentUser)return;const button=document.getElementById('dashboardPowerButton');if(button)button.disabled=true;
   try{await oosAutoSaveNow();}finally{
     try{await oosAuth.signOut();}catch(err){console.error('OutofSight sign-out failed',err);}
     oosUnlocked=false;oosCurrentUser=null;document.body.classList.add('locked');const gate=document.getElementById('securityGate');if(gate)gate.style.display='flex';
-    const email=document.getElementById('authEmail'),pass=document.getElementById('authPassword');if(email)email.value='';if(pass)pass.value='';
-    oosStatus('Dashboard locked. Sign in to continue.','');oosSetSaveStatus('ok','Dashboard locked');if(button)button.disabled=false;setTimeout(()=>document.getElementById('authEmail')?.focus(),100);
+    const pass=document.getElementById('authPassword');if(pass)pass.value='';
+    oosStatus('Dashboard locked. Sign in to continue.','');oosSetSaveStatus('ok','Dashboard locked');if(button)button.disabled=false;setTimeout(()=>document.getElementById('authPassword')?.focus(),100);
   }
 }
 async function oosLoadFromCloud(){
@@ -3717,21 +3738,6 @@ async function oosLoadFromCloud(){
           try{
             const map={};
             cloudSnapshot.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});
-            localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));
-          }catch(e){}
-        }
-      }else{
-        // Backward compatibility with the previous nested Firestore format.
-        // Read it once, then the next successful save automatically migrates it
-        // to the safer stateJson format above.
-        if(data.dashboard)localStorage.setItem('outofsight_dashboard_state',JSON.stringify(data.dashboard));
-        if(data.notes)localStorage.setItem('outofsight_notes',JSON.stringify(data.notes));
-        if(data.tasks)localStorage.setItem('outofsight_tasks',JSON.stringify(data.tasks));
-        if(data.calendar)localStorage.setItem('outofsight_calendar',JSON.stringify(data.calendar));
-        if(Array.isArray(data.analytics)){
-          try{
-            const map={};
-            data.analytics.forEach(a=>{if(a&&a.name)map[a.name]=a.lookerUrl||'';});
             localStorage.setItem('outofsight_ga_looker_urls',JSON.stringify(map));
           }catch(e){}
         }
@@ -3780,7 +3786,7 @@ oosAuth.onAuthStateChanged(async user=>{
   // IMPORTANT: do NOT sign the user out when Firestore rules reject the request.
   // The error is shown clearly so the rules can be fixed without hiding the real cause.
   oosCurrentUser=user;
-  oosStatus('Authentication successful. Connecting to cloud…','');
+  oosStatus('Authentication successful. Connecting to '+OOS_CLOUD_PATH+'…','');
   try{
     await oosLoadFromCloud();
     unlockDashboard('Signed in as '+user.email+' • Cloud connected');
