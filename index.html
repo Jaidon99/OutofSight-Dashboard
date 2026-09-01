@@ -2112,11 +2112,34 @@ body.locked .app{display:none !important}
             <div id="targetForm">
               <div class="kv">Set Monthly Target</div>
               <div style="display:flex; gap:8px; margin-top:8px;">
-                <input type="number" id="monthlyTargetInput" placeholder="Target amount" min="0" style="width:160px;">
+                <input type="number" id="monthlyTargetInput" placeholder="Target amount" min="0" step="0.01" style="width:160px;">
                 <button class="btn-glow" onclick="setMonthlyTarget()">Save Target</button>
               </div>
             </div>
             <div style="margin-top:12px; color:var(--muted); font-size:13px;">Tip: Achieved amount is calculated from orders with status "Shipped".</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-legacy" style="margin-top:14px;">
+        <h3 style="margin:0 0 8px 0">Lifetime Progress <span style="color:var(--muted); font-size:13px; font-weight:400;">— Target: <strong id="lifetimeTargetDisplay">R0.00</strong></span></h3>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div style="flex:1; min-width:220px;">
+            <div class="kv">Achieved (Lifetime)</div>
+            <div style="font-weight:700; font-size:20px; font-family:var(--font-mono);" id="lifetimeAchievedDisplay">R0.00</div>
+            <div class="progress-wrap" aria-hidden="true"><div class="progress-bar" id="lifetimeProgressBar" style="width: 0%;"></div></div>
+            <div style="color:var(--muted); margin-top:6px;" id="lifetimeProgressText">0% of target</div>
+          </div>
+          <div style="min-width:320px;">
+            <div id="lifetimeTargetForm">
+              <div class="kv">Set Lifetime Target &amp; Actual</div>
+              <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                <input type="number" id="lifetimeTargetInput" placeholder="Lifetime target" min="0" step="0.01" style="width:150px;">
+                <input type="number" id="lifetimeActualInput" placeholder="Lifetime actual" min="0" step="0.01" style="width:150px;">
+                <button class="btn-glow" onclick="setLifetimeTarget()">Save Lifetime</button>
+              </div>
+            </div>
+            <div style="margin-top:12px; color:var(--muted); font-size:13px;">Tip: Use this block for cumulative, lifetime figures — including revenue earned before this dashboard existed. Enter the amount(s) you want to update; leave a field blank to keep its current value.</div>
           </div>
         </div>
       </div>
@@ -2144,6 +2167,8 @@ let orders = [];
 let projects = [];
 let clients = new Set();
 let monthlyTarget = 5000;
+let lifetimeTarget = 0;
+let lifetimeActual = 0;
 
 function genId(prefix='ID'){ return prefix + Math.random().toString(36).slice(2,8).toUpperCase(); }
 function fmtCurrency(n){ return 'R' + Number(n).toFixed(2); }
@@ -3162,15 +3187,23 @@ function openClientModal(e, nameEscaped){
   if(e) e.stopPropagation();
   const name = unescapeHtml(nameEscaped);
   const meta = (window.clientMeta && window.clientMeta[name]) ? window.clientMeta[name] : {};
-  document.getElementById('modalTitle').innerText = name;
-  document.getElementById('modalMeta').innerText = meta.email ? meta.email : 'Client record';
   const clientProjects = projects.filter(p=>p.client === name);
   const clientOrders = orders.filter(o=>o.client === name);
+  const computedRevenue = clientOrders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
+  const revenueValue = (typeof meta.revenue === 'number') ? meta.revenue : computedRevenue;
+  document.getElementById('modalTitle').innerText = name;
+  document.getElementById('modalMeta').innerText = 'Customer record';
   const body = document.getElementById('modalBody');
   body.innerHTML = `
+    <div class="kv">Customer Name</div><input type="text" id="wsClientName" value="${escapeHtml(name)}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Website</div><input type="text" id="wsClientWebsite" value="${escapeHtml(meta.website || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Phone</div><input type="text" id="wsClientPhone" value="${escapeHtml(meta.phone || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Email</div><input type="text" id="wsClientEmail" value="${escapeHtml(meta.email || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Total Revenue (R)</div><input type="number" id="wsClientRevenue" value="${revenueValue}" min="0" step="0.01" style="width:100%; margin-bottom:8px;">
+    <div style="color:var(--muted); font-size:12px; margin:-4px 0 8px 0;">Auto-calculated from shipped orders is R${computedRevenue.toFixed(2)} — override above if needed.</div>
     <div class="kv">Projects (${clientProjects.length})</div><div style="margin-bottom:8px;">${clientProjects.length ? clientProjects.map(p=>`${escapeHtml(p.service)} • ${p.status}`).join('<br>') : 'No projects'}</div>
     <div class="kv">Orders (${clientOrders.length})</div><div style="margin-bottom:8px; color:var(--muted)">${clientOrders.length ? clientOrders.map(o=>`${o.id} • ${escapeHtml(o.item)} • ${o.status}`).join('<br>') : 'No orders'}</div>
-    <div class="kv">Notes</div><textarea id="modalClientNotes" rows="4" style="width:100%; margin-top:6px;">${escapeHtml(meta.notes || '')}</textarea>
+    <div class="kv">Notes</div><textarea id="wsClientNotes" rows="4" style="width:100%; margin-top:6px;">${escapeHtml(meta.notes || '')}</textarea>
   `;
   document.getElementById('modalFooter').innerHTML = `<button onclick="saveClientModal('${escapeHtml(name)}')">Save</button>`;
   document.getElementById('modalBackdrop').style.display = 'flex';
@@ -3178,11 +3211,39 @@ function openClientModal(e, nameEscaped){
 
 function saveClientModal(nameEscaped){
   const name = unescapeHtml(nameEscaped);
-  const notes = document.getElementById('modalClientNotes').value.trim();
+  const get=id=>document.getElementById(id)?.value.trim()||'';
+  const newName = get('wsClientName') || name;
+  const website = get('wsClientWebsite');
+  const phone = get('wsClientPhone');
+  const email = get('wsClientEmail');
+  const notes = get('wsClientNotes');
+  const revenue = Number(document.getElementById('wsClientRevenue')?.value) || 0;
+
   if(!window.clientMeta) window.clientMeta = {};
-  if(!window.clientMeta[name]) window.clientMeta[name] = {};
-  window.clientMeta[name].notes = notes;
+  const meta = window.clientMeta[name] || {};
+  meta.website = website;
+  meta.phone = phone;
+  meta.email = email;
+  meta.notes = notes;
+  meta.revenue = revenue;
+
+  if(newName !== name){
+    clients.delete(name);
+    clients.add(newName);
+    projects.forEach(p=>{ if(p.client === name) p.client = newName; });
+    orders.forEach(o=>{ if(o.client === name) o.client = newName; });
+    delete window.clientMeta[name];
+    window.clientMeta[newName] = meta;
+    const dc = dashboardCustomers.find(c=>c.name === name);
+    if(dc) dc.name = newName;
+  } else {
+    window.clientMeta[name] = meta;
+  }
+
+  renderAll();
+  renderWorkspaces();
   saveDashboardState();
+  if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
   closeModal();
 }
 
@@ -3192,6 +3253,20 @@ function saveClientModal(nameEscaped){
 function setMonthlyTarget(){
   monthlyTarget = Number(document.getElementById('monthlyTargetInput').value) || 0;
   document.getElementById('monthlyTargetInput').value = '';
+  saveDashboardState();
+  if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
+  renderAll();
+}
+
+function setLifetimeTarget(){
+  const targetVal = document.getElementById('lifetimeTargetInput').value;
+  const actualVal = document.getElementById('lifetimeActualInput').value;
+  if(targetVal !== '') lifetimeTarget = Number(targetVal) || 0;
+  if(actualVal !== '') lifetimeActual = Number(actualVal) || 0;
+  document.getElementById('lifetimeTargetInput').value = '';
+  document.getElementById('lifetimeActualInput').value = '';
+  saveDashboardState();
+  if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
   renderAll();
 }
 
@@ -3216,6 +3291,14 @@ function renderAll(){
   if(document.getElementById('achievedDisplay')) document.getElementById('achievedDisplay').innerText = fmtCurrency(achieved);
   if(document.getElementById('targetDisplay')) document.getElementById('targetDisplay').innerText = fmtCurrency(monthlyTarget);
   if(document.getElementById('target')) document.getElementById('target').innerText = fmtCurrency(monthlyTarget);
+
+  if(document.getElementById('lifetimeAchievedDisplay')) document.getElementById('lifetimeAchievedDisplay').innerText = fmtCurrency(lifetimeActual);
+  if(document.getElementById('lifetimeTargetDisplay')) document.getElementById('lifetimeTargetDisplay').innerText = fmtCurrency(lifetimeTarget);
+  if(document.getElementById('lifetimeProgressBar')){
+    const lifetimePct = lifetimeTarget > 0 ? Math.min(100, Math.round((lifetimeActual / lifetimeTarget) * 100)) : 0;
+    document.getElementById('lifetimeProgressBar').style.width = lifetimePct + '%';
+    if(document.getElementById('lifetimeProgressText')) document.getElementById('lifetimeProgressText').innerText = lifetimePct + '% of target';
+  }
 
   if(document.getElementById('progressBar')){
       const percent = monthlyTarget > 0 ? Math.min(100, Math.round((achieved / monthlyTarget) * 100)) : 0;
@@ -3466,7 +3549,9 @@ function renderWorkspaces(){
     const clientOrders = orders.filter(o=>o.client===name);
     const completed = clientProjects.filter(p=>p.status==='Completed').length;
     const pct = clientProjects.length ? Math.round((completed/clientProjects.length)*100) : 0;
-    const revenue = clientOrders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
+    const clientMetaEntry = (window.clientMeta && window.clientMeta[name]) ? window.clientMeta[name] : {};
+    const computedRevenue = clientOrders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
+    const revenue = (typeof clientMetaEntry.revenue === 'number') ? clientMetaEntry.revenue : computedRevenue;
     const initials = name.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
     const grad = avatarGradients[i % avatarGradients.length];
     return `
@@ -3532,6 +3617,8 @@ function loadDashboardState(){
     clients = new Set(state.clients||[]);
     window.clientMeta = state.clientMeta || {};
     monthlyTarget = typeof state.monthlyTarget === 'number' ? state.monthlyTarget : monthlyTarget;
+    lifetimeTarget = typeof state.lifetimeTarget === 'number' ? state.lifetimeTarget : lifetimeTarget;
+    lifetimeActual = typeof state.lifetimeActual === 'number' ? state.lifetimeActual : lifetimeActual;
     if(Array.isArray(state.dashboardCustomers)) dashboardCustomers = oosReattachDefaultLogos(state.dashboardCustomers);
     return (orders.length>0 || projects.length>0 || clients.size>0);
   }catch(e){ return false; }
@@ -3544,6 +3631,8 @@ function saveDashboardState(){
       clients: Array.from(clients),
       clientMeta: window.clientMeta || {},
       monthlyTarget,
+      lifetimeTarget,
+      lifetimeActual,
       dashboardCustomers
     };
     localStorage.setItem('outofsight_dashboard_state', JSON.stringify(state));
@@ -3574,7 +3663,7 @@ function oosSetSaveStatus(state, text){
   label.textContent=text;
 }
 function oosBuildSnapshot(){
-  return {version:3,savedAt:new Date().toISOString(),dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,dashboardCustomers:oosStripDefaultLogosForSync(dashboardCustomers)},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
+  return {version:3,savedAt:new Date().toISOString(),dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,lifetimeTarget,lifetimeActual,dashboardCustomers:oosStripDefaultLogosForSync(dashboardCustomers)},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
 }
 function oosCacheSnapshot(snapshot){
   try{localStorage.setItem(OOS_AUTOSAVE_KEY,JSON.stringify(snapshot));saveDashboardState();if(typeof saveNotes==='function')saveNotes();if(typeof saveTasks==='function')saveTasks();}catch(err){console.error('OutofSight local cache failed',err);}
