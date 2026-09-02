@@ -92,7 +92,7 @@ body {
 }
 .bg-ambient::after{
   width:560px; height:560px; bottom:-200px; right:-140px;
-  background: radial-gradient(circle, rgba(51,168,255,0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(255,140,30,0.14), transparent 70%);
 }
 .bg-grid{
   position:fixed; inset:0; z-index:0; pointer-events:none;
@@ -124,13 +124,13 @@ body {
 }
 
 .brand{
-  display:flex; align-items:center; justify-content:space-between; gap:10px; padding: 2px 8px 18px 8px;
+  display:flex; align-items:center; justify-content:space-between; gap:10px; padding: 4px 8px 22px 8px;
   border-bottom: 1px solid var(--glass-border-soft);
   margin-bottom: 18px;
 }
 .brand-logo-wrap{display:flex;align-items:center;min-width:0}
 .brand-logo{
-  height:44px; width:auto; cursor:pointer;
+  height:34px; width:auto; cursor:pointer;
   filter: drop-shadow(0 0 14px rgba(51,168,255,0.35));
   transition: filter 200ms ease, transform 200ms ease;
 }
@@ -548,7 +548,7 @@ body {
 }
 .tasks-page-list{ max-height:520px; overflow-y:auto; padding-right:2px; position:relative; z-index:1; }
 .tasks-completed-block{ opacity:0.92; }
-.task-item-page{ position:relative; padding-right:10px; }
+.task-item-page{ position:relative; padding-right:38px; }
 .task-del-btn{
   position:absolute; right:6px; top:50%; transform:translateY(-50%);
   width:24px; height:24px; border-radius:7px; border:none;
@@ -559,13 +559,6 @@ body {
 .task-del-btn svg{ width:13px; height:13px; }
 .task-item-page:hover .task-del-btn{ opacity:1; }
 .task-del-btn:hover{ background:rgba(255,92,122,0.14); color:var(--red-neon); }
-.task-action-btn{width:28px;height:28px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--text-faint);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all 160ms ease;opacity:1;}
-.task-action-btn svg{width:15px;height:15px;}
-.task-action-btn:hover{background:rgba(255,255,255,.08);color:var(--text);}
-.task-action-btn.pin:hover{color:var(--gold);}
-.task-action-btn.archive:hover{color:var(--blue-neon);}
-.task-action-btn.delete:hover{background:rgba(255,92,122,.14);color:var(--red-neon);}
-.task-actions{display:flex;align-items:center;gap:5px;margin-left:auto;flex:0 0 auto;}
 
 /* ===================== WORKSPACES PAGE ===================== */
 .workspaces-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
@@ -1102,21 +1095,6 @@ button.btn-lightblue { background: #38bdf8; color: #0f172a; }
 .note-add-card svg{ width:24px; height:24px; opacity:0.8; }
 .notes-empty{ padding:34px; text-align:center; color:var(--text-dim); border:1px dashed var(--glass-border); border-radius:var(--radius-md); }
 
-
-.note-archive-card{margin-top:18px;border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:15px 18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;transition:all 160ms ease;}
-.note-archive-card:hover{background:rgba(255,255,255,.065);border-color:rgba(46,199,255,.22);transform:translateY(-2px);}
-.archive-card-left{display:flex;align-items:center;gap:12px;min-width:0;}
-.archive-logo{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(46,199,255,.1);border:1px solid rgba(46,199,255,.2);color:var(--blue-neon);box-shadow:0 0 18px rgba(46,199,255,.08);flex:0 0 auto;}
-.archive-logo svg{width:21px;height:21px;}
-.archive-card-title{font-family:var(--font-display);font-weight:800;font-size:13px;}
-.archive-card-sub{font-size:10.5px;color:var(--text-faint);margin-top:3px;}
-.archive-card-arrow{color:var(--text-dim);font-size:18px;transition:transform 160ms ease;}
-.note-archive-card.open .archive-card-arrow{transform:rotate(90deg);}
-.archived-grid{display:none;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:16px;margin-top:12px;}
-.archived-grid.open{display:grid;}
-.archived-note-card,.archived-task-card{opacity:.9;border-style:dashed;}
-.archived-note-card .note-card{margin:0;}
-
 /* ===================== CALENDAR VIEW ===================== */
 .calendar-shell{ display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; align-items:start; }
 .cal-panel{ background:var(--glass-fill); border:1px solid var(--glass-border); backdrop-filter:blur(16px); box-shadow:0 16px 40px rgba(0,0,0,0.45); border-radius:var(--radius-lg); padding:26px; }
@@ -1263,78 +1241,10 @@ body.locked .app{display:none !important}
 .security-field{width:100%;height:48px;text-align:left;padding:0 16px;font-family:var(--font-sans,inherit);font-size:14px;background:rgba(255,255,255,.045)!important;border:1px solid rgba(255,255,255,.11)!important;border-radius:12px!important;color:#fff!important;margin:0 0 10px!important}
 .security-field:focus{border-color:rgba(51,168,255,.65)!important;box-shadow:0 0 0 4px rgba(51,168,255,.08);outline:none}
 .security-alt{width:100%;height:40px;margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:12px;color:var(--text-dim);font-weight:600;font-size:12px}
-
-
-/* ===================== DASHBOARD THEME TOGGLE ===================== */
-body.theme-lighter{ background:#3e3b52; }
-body.theme-lighter .bg-ambient::before{ background:radial-gradient(circle, rgba(51,168,255,0.16), transparent 70%); }
-body.theme-lighter .bg-ambient::after{ background:radial-gradient(circle, rgba(51,168,255,0.12), transparent 70%); }
-body.theme-lighter .sidebar{ background:linear-gradient(180deg, rgba(62,59,82,0.94), rgba(43,42,62,0.97)); }
-body.theme-lighter .security-grid{ opacity:.72; }
-body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,rgba(51,168,255,.13),transparent 38%),linear-gradient(160deg,#3e3b52,#323047 55%,#29283d); }
-.security-theme-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);}
-.security-theme-label{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:11.5px;}
-.security-theme-dot{width:7px;height:7px;border-radius:50%;background:var(--blue-neon);box-shadow:0 0 9px rgba(46,199,255,.7);}
-.theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:0;background:transparent;border:0;color:var(--text-dim);font:600 11px var(--font-body);cursor:pointer;}
-.theme-toggle-track{width:44px;height:24px;border-radius:999px;background:rgba(46,199,255,.2);border:1px solid rgba(46,199,255,.55);padding:3px;display:flex;align-items:center;transition:all 180ms ease;box-shadow:0 0 12px rgba(46,199,255,.12) inset;}
-.theme-toggle-thumb{width:16px;height:16px;border-radius:50%;background:var(--blue-neon);box-shadow:0 0 10px rgba(46,199,255,.7);transform:translateX(0);transition:all 180ms ease;}
-.theme-toggle.is-on .theme-toggle-track{background:rgba(52,255,180,.2);border-color:rgba(52,255,180,.65);box-shadow:0 0 12px rgba(52,255,180,.12) inset;}
-.theme-toggle.is-on .theme-toggle-thumb{background:var(--green-neon);box-shadow:0 0 10px rgba(52,255,180,.7);transform:translateX(18px);}
-.theme-toggle.is-on .theme-toggle-text{color:var(--green-neon);}
-
-/* ===================== WORKSPACE / CUSTOMER FINANCE ENHANCEMENTS ===================== */
-.brand-logo{
-  height:46px;
-  max-width:178px;
-  object-fit:contain;
-}
-.workspace-kpi-actions{display:flex;align-items:center;gap:8px;}
-.workspace-revenue-value.blurred{filter:blur(9px);user-select:none;}
-.workspace-stat.revenue-stat{position:relative;}
-.workspace-stat .num.workspace-revenue-value{transition:filter 180ms ease;}
-.workspace-blur-btn{font-size:10px;padding:4px 9px;background:rgba(255,255,255,.05);border:1px solid var(--glass-border-soft);color:var(--text-dim);border-radius:999px;cursor:pointer;font-family:var(--font-body);}
-.workspace-blur-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
-
-.workspace-name-row{display:flex;align-items:center;gap:7px;}
-.workspace-eye-btn{width:25px;height:25px;padding:0;border-radius:7px;background:transparent;border:1px solid transparent;color:var(--text-faint);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all 160ms ease;}
-.workspace-eye-btn:hover{background:rgba(46,199,255,.08);border-color:rgba(46,199,255,.16);color:var(--blue-neon);}
-.workspace-eye-btn svg{width:14px;height:14px;}
-
-.workspace-modal-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-border-soft);}
-.workspace-service-box{background:rgba(46,199,255,.045);border:1px solid rgba(46,199,255,.12);border-radius:12px;padding:12px;}
-.target-customer-section{margin-top:18px;}
-.target-customer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
-.target-customer-card{background:var(--glass-fill);border:1px solid var(--glass-border);backdrop-filter:blur(16px);border-radius:var(--radius-lg);padding:18px;box-shadow:0 16px 40px rgba(0,0,0,.45);position:relative;overflow:hidden;}
-.target-customer-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.target-customer-logo{width:54px;height:54px;border-radius:13px;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;border:1px solid var(--glass-border);}
-.target-customer-logo img{width:100%;height:100%;object-fit:contain;}
-.target-customer-title{font-family:var(--font-display);font-size:15px;font-weight:700;}
-.target-customer-sub{font-size:11px;color:var(--text-faint);margin-top:3px;}
-.target-field{margin-top:10px;}
-.target-field label{display:block;font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.55px;margin-bottom:4px;}
-.target-field input,.target-field select,.target-field textarea{width:100%;min-width:0;margin:0;}
-.target-customer-save{margin-top:12px;width:100%;}
-.target-files{margin-top:15px;padding-top:13px;border-top:1px solid var(--glass-border-soft);}
-.target-files-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
-.target-files-title{font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;}
-.target-file-btn{font-size:11px;padding:7px 10px;border-radius:8px;background:rgba(46,199,255,.12);border:1px solid rgba(46,199,255,.25);color:var(--blue-neon);cursor:pointer;}
-.target-file-btn:hover{background:rgba(46,199,255,.18);}
-.target-file-list{display:flex;flex-direction:column;gap:6px;}
-.target-file-row{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:9px;background:rgba(255,255,255,.035);border:1px solid var(--glass-border-soft);}
-.target-file-name{flex:1;min-width:0;color:var(--text);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;}
-.target-file-name:hover{color:var(--blue-neon);}
-.target-file-delete{width:25px;height:25px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;background:transparent;border:1px solid transparent;color:var(--text-faint);}
-.target-file-delete:hover{background:rgba(255,92,122,.14);color:var(--red-neon);}
-.target-files-empty{font-size:11px;color:var(--text-faint);padding:4px 0;}
-.target-file-status{font-size:10px;color:var(--text-faint);margin-top:7px;min-height:13px;}
-@media(max-width:1000px){.target-customer-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:680px){.target-customer-grid{grid-template-columns:1fr;}.brand-logo{height:42px;max-width:155px;}}
-
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage-compat.js"></script>
 <script>
   const oosFirebaseConfig = {
     apiKey: "AIzaSyBPDlhJcZzPZJMTgS_NyosU7XAWfvT4-qY",
@@ -1350,7 +1260,6 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
   // Ask for sign-in every time the dashboard is opened (session-only persistence)
   oosAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(err=>console.error('OutofSight persistence setting failed', err));
   const oosDb = firebase.firestore();
-  const oosStorage = firebase.storage();
 </script>
 </head>
 
@@ -1366,13 +1275,6 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
     <input id="authPassword" class="security-field" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
     <button class="security-unlock" type="button" onclick="oosSignIn()">Sign In</button>
     <div id="securityStatus" class="security-status" style="margin-top:13px;min-height:20px;font-size:11.5px;color:var(--text-dim)"></div>
-    <div class="security-theme-row">
-      <span class="security-theme-label"><span class="security-theme-dot"></span>Dashboard theme</span>
-      <button id="securityThemeToggle" class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Toggle dashboard background theme" onclick="toggleDashboardTheme()">
-        <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
-        <span class="theme-toggle-text" id="securityThemeText">Dark</span>
-      </button>
-    </div>
   </div>
 </div>
 
@@ -1392,25 +1294,25 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
     </div>
     <div class="nav-label">Workspace</div>
     <nav class="nav">
-      <button class="nav-item" id="workspacesLink" onclick="navClick(this,'workspaces')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-        Workspaces
-      </button>
       <button class="nav-item" id="customersLink" onclick="navClick(this,'clients')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Customers
       </button>
-      <button class="nav-item" id="analyticsLink" onclick="navClick(this,'analytics')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="0.5"/><rect x="13" y="8" width="3" height="10" rx="0.5"/><rect x="18" y="5" width="2.6" height="13" rx="0.5"/></svg>
-        Analytics
+      <button class="nav-item" id="workspacesLink" onclick="navClick(this,'workspaces')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Workspaces
       </button>
-      <button class="nav-item" id="calendarLink" onclick="navClick(this,'calendar')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18"/><path d="M8 2.5v4M16 2.5v4"/></svg>
-        Calendar
+      <button class="nav-item" id="analyticsLink" onclick="navClick(this,'analytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="0.5"/><rect x="13" y="8" width="3" height="10" rx="0.5"/><rect x="19" y="5" width="0" height="13"/><rect x="18" y="5" width="2.6" height="13" rx="0.5"/></svg>
+        Analytics
       </button>
       <button class="nav-item" id="tasksLink" onclick="navClick(this,'tasks')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l2.5 2.5L16 9"/></svg>
         Tasks
+      </button>
+      <button class="nav-item" id="calendarLink" onclick="navClick(this,'calendar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18"/><path d="M8 2.5v4M16 2.5v4"/></svg>
+        Calendar
       </button>
       <button class="nav-item" id="notesLink" onclick="navClick(this,'notes')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 13h6M9 17h6"/></svg>
@@ -1795,15 +1697,6 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
           <div class="task-list tasks-page-list" id="completedTaskList"></div>
         </div>
       </div>
-
-      <div class="note-archive-card" id="tasksArchiveCard" onclick="toggleArchivedTasks()">
-        <div class="archive-card-left">
-          <div class="archive-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M5 7l1 13h12l1-13"/><path d="M9 11v5M15 11v5"/><path d="M8 4h8l1 3H7l1-3z"/></svg></div>
-          <div><div class="archive-card-title">OOS Archived Tasks</div><div class="archive-card-sub"><span id="archivedTasksCount">0</span> archived task(s) • click to view</div></div>
-        </div>
-        <div class="archive-card-arrow">›</div>
-      </div>
-      <div class="archived-grid" id="archivedTasksGrid"></div>
     </div>
 
     <!-- ============ WORKSPACES VIEW ============ -->
@@ -1836,13 +1729,10 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
           <div class="kpi-trend">Across all workspaces</div>
         </div>
         <div class="kpi-card c-violet">
-          <div class="kpi-top">
-            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg></div>
-            <button class="blur-btn" id="wsTotalRevenueBlurBtn" onclick="toggleWorkspaceTotalRevenueBlur(event)">Unblur</button>
-          </div>
+          <div class="kpi-top"><div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg></div></div>
           <div class="kpi-label">Total Revenue</div>
-          <div class="kpi-value blurred" id="wsRevenueStat">R0.00</div>
-          <div class="kpi-trend">Combined customer revenue</div>
+          <div class="kpi-value" id="wsRevenueStat">R0.00</div>
+          <div class="kpi-trend">From shipped orders</div>
         </div>
       </div>
 
@@ -2027,14 +1917,6 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
       </div>
       <div style="color:var(--muted); font-size:12.5px; margin:4px 0 4px;">Total: <strong id="notesCount">0</strong></div>
       <div class="notes-grid" id="notesGrid"></div>
-      <div class="note-archive-card" id="notesArchiveCard" onclick="toggleArchivedNotes()">
-        <div class="archive-card-left">
-          <div class="archive-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M5 7l1 13h12l1-13"/><path d="M9 11v5M15 11v5"/><path d="M8 4h8l1 3H7l1-3z"/></svg></div>
-          <div><div class="archive-card-title">OOS Archived Notes</div><div class="archive-card-sub"><span id="archivedNotesCount">0</span> archived note(s) • click to view</div></div>
-        </div>
-        <div class="archive-card-arrow">›</div>
-      </div>
-      <div class="archived-grid" id="archivedNotesGrid"></div>
     </div>
 
     <!-- ============ CALENDAR VIEW ============ -->
@@ -2261,17 +2143,6 @@ body.theme-lighter #securityGate{ background:radial-gradient(circle at 50% 20%,r
           </div>
         </div>
       </div>
-
-      <!-- CUSTOMER REVENUE & PAYMENT TRACKING -->
-      <div class="panel-legacy target-customer-section">
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:4px;">
-          <div>
-            <h3 style="margin:0 0 5px 0">Customer Revenue &amp; Payments</h3>
-            <div style="color:var(--muted);font-size:13px">Track each customer's revenue, upcoming payment and financial documents.</div>
-          </div>
-        </div>
-        <div id="targetCustomerGrid" class="target-customer-grid"></div>
-      </div>
     </div>
 
   </main>
@@ -2298,9 +2169,6 @@ let clients = new Set();
 let monthlyTarget = 5000;
 let lifetimeTarget = 0;
 let lifetimeActual = 0;
-
-// Customer financial records are shared by Workspaces and Target.
-
 
 function genId(prefix='ID'){ return prefix + Math.random().toString(36).slice(2,8).toUpperCase(); }
 function fmtCurrency(n){ return 'R' + Number(n).toFixed(2); }
@@ -2727,7 +2595,6 @@ function loadNotes(){
     notes.forEach(n=>{
       if(!noteColorMap[n.color]) n.color = noteColorKeys[0];
       if(n.pinned === undefined) n.pinned = false;
-      if(n.archived === undefined) n.archived = false;
       if(n.title === undefined) n.title = '';
       if(n.tag === undefined) n.tag = '';
     });
@@ -2736,74 +2603,94 @@ function loadNotes(){
 
 function saveNotes(){
   try{ localStorage.setItem('outofsight_notes', JSON.stringify(notes)); }catch(e){}
-  if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
-}
-
-function noteCardHtml(n,i,archived=false){
-  const c = noteColorMap[n.color] || noteColorMap[noteColorKeys[0]];
-  return `
-    <div class="note-card ${n.pinned?'pinned':''}${archived?' archived-note-card':''}" style="--note-color:${c.tint}; --note-color-solid:${c.solid};">
-      <div class="note-top">
-        <div class="note-date">${escapeHtml(n.date)}</div>
-        <div class="note-actions">
-          ${archived ? `<button onclick="restoreNote(${i});event.stopPropagation();" title="Restore note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v8h8"/></svg></button>` : `<button class="note-pin" onclick="toggleNotePin(${i})" title="${n.pinned?'Unpin':'Pin'}"><svg viewBox="0 0 24 24" fill="${n.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3-1-7z"/></svg></button><button class="note-archive-btn" onclick="archiveNote(${i})" title="Archive note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M5 7l1 13h12l1-13"/><path d="M8 4h8l1 3H7l1-3z"/></svg></button>`}
-          <button onclick="deleteNote(${i})" title="Delete note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-        </div>
-      </div>
-      <input class="note-title-input" placeholder="Title" value="${escapeHtml(n.title)}" ${archived?'readonly':''} oninput="${archived?'':`updateNoteTitle(${i}, this.value)`}">
-      <textarea placeholder="Write a note…" ${archived?'readonly':''} oninput="${archived?'':`updateNote(${i}, this.value)`}">${escapeHtml(n.text)}</textarea>
-      <div class="note-footer">
-        <input class="note-tag" placeholder="Tag (optional)" value="${escapeHtml(n.tag)}" ${archived?'readonly':''} oninput="${archived?'':`updateNoteTag(${i}, this.value)`}">
-        ${archived ? `<span style="font-size:10px;color:var(--text-faint);font-family:var(--font-mono);">ARCHIVED</span>` : `<button class="note-color-dot" title="Change color" onclick="cycleNoteColor(${i})"></button>`}
-      </div>
-    </div>`;
 }
 
 function renderNotes(){
   loadNotes();
   const grid = document.getElementById('notesGrid');
   if(!grid) return;
-  const activeIndexed = notes.map((n,i)=>({n,i})).filter(({n})=>!n.archived);
+  document.getElementById('notesCount').innerText = notes.length;
+
   const q = (document.getElementById('notesSearch')?.value || '').trim().toLowerCase();
-  let indexed = q ? activeIndexed.filter(({n})=> (n.title||'').toLowerCase().includes(q) || (n.text||'').toLowerCase().includes(q) || (n.tag||'').toLowerCase().includes(q)) : activeIndexed;
+  let indexed = notes.map((n,i)=>({n,i}));
+  if(q){
+    indexed = indexed.filter(({n})=> (n.title||'').toLowerCase().includes(q) || (n.text||'').toLowerCase().includes(q) || (n.tag||'').toLowerCase().includes(q));
+  }
   indexed.sort((a,b)=> (b.n.pinned - a.n.pinned));
-  document.getElementById('notesCount').innerText = indexed.length;
-  grid.innerHTML = indexed.map(({n,i})=>noteCardHtml(n,i,false)).join('') + `<div class="note-add-card" onclick="addNote()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New note</div>`;
-  renderArchivedNotes();
-}
 
-function renderArchivedNotes(){
-  const grid=document.getElementById('archivedNotesGrid');
-  const count=document.getElementById('archivedNotesCount');
-  if(!grid) return;
-  loadNotes();
-  const archived=notes.map((n,i)=>({n,i})).filter(({n})=>n.archived);
-  if(count) count.innerText=archived.length;
-  grid.innerHTML=archived.length ? archived.map(({n,i})=>noteCardHtml(n,i,true)).join('') : '<div class="notes-empty" style="grid-column:1/-1;">No notes have been archived yet.</div>';
-}
-
-function toggleArchivedNotes(){
-  const card=document.getElementById('notesArchiveCard'), grid=document.getElementById('archivedNotesGrid');
-  if(!card||!grid)return;
-  const open=grid.classList.toggle('open');
-  card.classList.toggle('open',open);
-  if(open) renderArchivedNotes();
+  grid.innerHTML = indexed.map(({n,i}) => {
+    const c = noteColorMap[n.color] || noteColorMap[noteColorKeys[0]];
+    return `
+    <div class="note-card ${n.pinned?'pinned':''}" style="--note-color:${c.tint}; --note-color-solid:${c.solid};">
+      <div class="note-top">
+        <div class="note-date">${escapeHtml(n.date)}</div>
+        <div class="note-actions">
+          <button class="note-pin" onclick="toggleNotePin(${i})" title="${n.pinned?'Unpin':'Pin'}">
+            <svg viewBox="0 0 24 24" fill="${n.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3-1-7z"/></svg>
+          </button>
+          <button onclick="deleteNote(${i})" title="Delete note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <input class="note-title-input" placeholder="Title" value="${escapeHtml(n.title)}" oninput="updateNoteTitle(${i}, this.value)">
+      <textarea placeholder="Write a note…" oninput="updateNote(${i}, this.value)">${escapeHtml(n.text)}</textarea>
+      <div class="note-footer">
+        <input class="note-tag" placeholder="Tag (optional)" value="${escapeHtml(n.tag)}" oninput="updateNoteTag(${i}, this.value)">
+        <button class="note-color-dot" title="Change color" onclick="cycleNoteColor(${i})"></button>
+      </div>
+    </div>
+  `;}).join('') + `
+    <div class="note-add-card" onclick="addNote()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      New note
+    </div>`;
 }
 
 function addNote(){
-  notes.unshift({ title:'', text:'', tag:'', pinned:false, archived:false, color:noteColorKeys[Math.floor(Math.random()*noteColorKeys.length)], date: new Date().toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'}) });
+  notes.unshift({ title:'', text:'', tag:'', pinned:false, color:noteColorKeys[Math.floor(Math.random()*noteColorKeys.length)], date: new Date().toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'}) });
   saveNotes();
   renderNotes();
 }
 
-function updateNote(i, val){ if(!notes[i]) return; notes[i].text = val; saveNotes(); }
-function updateNoteTitle(i, val){ if(!notes[i]) return; notes[i].title = val; saveNotes(); }
-function updateNoteTag(i, val){ if(!notes[i]) return; notes[i].tag = val; saveNotes(); }
-function toggleNotePin(i){ if(!notes[i]) return; notes[i].pinned = !notes[i].pinned; saveNotes(); renderNotes(); }
-function cycleNoteColor(i){ if(!notes[i]) return; const idx=noteColorKeys.indexOf(notes[i].color); notes[i].color=noteColorKeys[(idx+1)%noteColorKeys.length]; saveNotes(); renderNotes(); }
-function archiveNote(i){ if(!notes[i]) return; notes[i].archived=true; notes[i].pinned=false; saveNotes(); renderNotes(); const g=document.getElementById('archivedNotesGrid'); if(g&&g.classList.contains('open')) renderArchivedNotes(); }
-function restoreNote(i){ if(!notes[i]) return; notes[i].archived=false; saveNotes(); renderNotes(); renderArchivedNotes(); }
-function deleteNote(i){ notes.splice(i,1); saveNotes(); renderNotes(); renderArchivedNotes(); }
+function updateNote(i, val){
+  if(!notes[i]) return;
+  notes[i].text = val;
+  saveNotes();
+}
+
+function updateNoteTitle(i, val){
+  if(!notes[i]) return;
+  notes[i].title = val;
+  saveNotes();
+}
+
+function updateNoteTag(i, val){
+  if(!notes[i]) return;
+  notes[i].tag = val;
+  saveNotes();
+}
+
+function toggleNotePin(i){
+  if(!notes[i]) return;
+  notes[i].pinned = !notes[i].pinned;
+  saveNotes();
+  renderNotes();
+}
+
+function cycleNoteColor(i){
+  if(!notes[i]) return;
+  const idx = noteColorKeys.indexOf(notes[i].color);
+  notes[i].color = noteColorKeys[(idx+1) % noteColorKeys.length];
+  saveNotes();
+  renderNotes();
+}
+
+function deleteNote(i){
+  notes.splice(i,1);
+  saveNotes();
+  renderNotes();
+}
 
 /* -------------------------
    Calendar — month view, events saved to this browser (localStorage)
@@ -2875,99 +2762,134 @@ let tasks = [];
 
 function loadTasks(){
   try{
-    const raw=localStorage.getItem('outofsight_tasks');
+    const raw = localStorage.getItem('outofsight_tasks');
     if(raw){
-      tasks=JSON.parse(raw);
-      tasks.forEach(t=>{if(t.archived===undefined)t.archived=false;if(t.pinned===undefined)t.pinned=false;});
-    }else{
-      tasks=[
-        {id:'t1',text:'Push GeyserWise site updates',project:'GeyserWise',done:true,createdAt:Date.now()-6*3600000,archived:false,pinned:false},
-        {id:'t2',text:'Finish Zwehle Facilities service pages',project:'Zwehle Facilities',done:true,createdAt:Date.now()-5*3600000,archived:false,pinned:false},
-        {id:'t3',text:'IOPSA leads sheet cleanup',project:'OutofSight Leads',done:true,createdAt:Date.now()-4*3600000,archived:false,pinned:false},
-        {id:'t4',text:'IridescenceSA mobile nav polish',project:'IridescenceSA',done:false,createdAt:Date.now()-3*3600000,archived:false,pinned:false},
-        {id:'t5',text:'ooscu.com SEO pass',project:'OutofSight',done:false,createdAt:Date.now()-2*3600000,archived:false,pinned:false},
-        {id:'t6',text:'Draft follow-up email batch',project:'OutofSight Leads',done:false,createdAt:Date.now()-1*3600000,archived:false,pinned:false}
+      tasks = JSON.parse(raw);
+    } else {
+      tasks = [
+        {id:'t1', text:'Push GeyserWise site updates', project:'GeyserWise', done:true, createdAt:Date.now()-6*3600000},
+        {id:'t2', text:'Finish Zwehle Facilities service pages', project:'Zwehle Facilities', done:true, createdAt:Date.now()-5*3600000},
+        {id:'t3', text:'IOPSA leads sheet cleanup', project:'OutofSight Leads', done:true, createdAt:Date.now()-4*3600000},
+        {id:'t4', text:'IridescenceSA mobile nav polish', project:'IridescenceSA', done:false, createdAt:Date.now()-3*3600000},
+        {id:'t5', text:'ooscu.com SEO pass', project:'OutofSight', done:false, createdAt:Date.now()-2*3600000},
+        {id:'t6', text:'Draft follow-up email batch', project:'OutofSight Leads', done:false, createdAt:Date.now()-1*3600000}
       ];
       saveTasks();
     }
-  }catch(e){tasks=[];}
+  }catch(e){ tasks = []; }
 }
 
 function saveTasks(){
-  try{localStorage.setItem('outofsight_tasks',JSON.stringify(tasks));}catch(e){}
-  if(typeof oosScheduleAutoSave==='function') oosScheduleAutoSave();
+  try{ localStorage.setItem('outofsight_tasks', JSON.stringify(tasks)); }catch(e){}
 }
 
-function taskItemHtml(t, withActions){
-  const idx=tasks.findIndex(x=>x.id===t.id);
+function taskItemHtml(t, withDelete){
   return `
-    <div class="task-item${t.done?' done':''}${withActions?' task-item-page':''}${t.pinned?' task-pinned':''}" onclick="toggleTaskDone('${t.id}')">
+    <div class="task-item${t.done ? ' done' : ''}${withDelete ? ' task-item-page' : ''}" onclick="toggleTaskDone('${t.id}')">
       <div class="task-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <div style="flex:1;min-width:0;">
+      <div style="flex:1; min-width:0;">
         <div class="task-text">${escapeHtml(t.text)}</div>
-        ${t.project?`<div class="task-proj">${escapeHtml(t.project)}</div>`:''}
+        ${t.project ? `<div class="task-proj">${escapeHtml(t.project)}</div>` : ''}
       </div>
-      ${withActions?`<div class="task-actions" onclick="event.stopPropagation();">
-        <button class="task-action-btn pin" onclick="toggleTaskPin('${t.id}')" title="${t.pinned?'Unpin task':'Pin task'}"><svg viewBox="0 0 24 24" fill="${t.pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 7 3 3v2H7v-2l3-3-1-7z"/></svg></button>
-        <button class="task-action-btn archive" onclick="archiveTask('${t.id}')" title="Archive task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M5 7l1 13h12l1-13"/><path d="M8 4h8l1 3H7l1-3z"/></svg></button>
-        <button class="task-action-btn delete" onclick="deleteTask('${t.id}')" title="Delete task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-      </div>`:''}
+      ${withDelete ? `<button class="task-del-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')" title="Delete task">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>` : ''}
     </div>`;
 }
 
 function renderTasksPanel(){
   loadTasks();
-  const active=tasks.filter(t=>!t.archived);
-  const total=active.length;
-  const done=active.filter(t=>t.done).length;
-  const pct=total?Math.round((done/total)*100):0;
-  const pending=active.filter(t=>!t.done).sort((a,b)=>(b.pinned-a.pinned)||(b.createdAt-a.createdAt));
-  const completed=active.filter(t=>t.done).sort((a,b)=>(b.pinned-a.pinned)||(b.createdAt-a.createdAt));
-  const shown=pending.concat(completed).slice(0,6);
-  const list=document.getElementById('taskList');
-  if(list) list.innerHTML=shown.length?shown.map(t=>taskItemHtml(t,false)).join(''):'<div class="tasks-empty">No tasks yet — add one from the Tasks page.</div>';
-  const fill=document.querySelector('.tasks-progress-fill'); if(fill)fill.style.width=pct+'%';
-  const sub=document.querySelector('.neon-panel.blue .neon-sub'); if(sub)sub.innerText=done+' of '+total+' complete';
-  const more=document.getElementById('tasksMoreLink'); if(more){if(active.length>shown.length){more.style.display='block';more.innerText='View all '+active.length+' tasks →';}else more.style.display='none';}
+  const total = tasks.length;
+  const done = tasks.filter(t=>t.done).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  const pending = tasks.filter(t=>!t.done).sort((a,b)=>b.createdAt-a.createdAt);
+  const completed = tasks.filter(t=>t.done).sort((a,b)=>b.createdAt-a.createdAt);
+  const shown = pending.concat(completed).slice(0,6);
+
+  const list = document.getElementById('taskList');
+  if(list) list.innerHTML = shown.length ? shown.map(t=>taskItemHtml(t,false)).join('') : '<div class="tasks-empty">No tasks yet — add one from the Tasks page.</div>';
+
+  const fill = document.querySelector('.tasks-progress-fill');
+  if(fill) fill.style.width = pct + '%';
+  const sub = document.querySelector('.neon-panel.blue .neon-sub');
+  if(sub) sub.innerText = done + ' of ' + total + ' complete';
+
+  const more = document.getElementById('tasksMoreLink');
+  if(more){
+    if(total > shown.length){
+      more.style.display = 'block';
+      more.innerText = 'View all ' + total + ' tasks →';
+    } else {
+      more.style.display = 'none';
+    }
+  }
 }
 
 function renderTasksPage(){
   loadTasks();
-  const active=tasks.filter(t=>!t.archived);
-  const total=active.length, done=active.filter(t=>t.done).length, pending=total-done, pct=total?Math.round((done/total)*100):0;
-  if(document.getElementById('tasksTotalStat'))document.getElementById('tasksTotalStat').innerText=total;
-  if(document.getElementById('tasksPendingStat'))document.getElementById('tasksPendingStat').innerText=pending;
-  if(document.getElementById('tasksCompletedStat'))document.getElementById('tasksCompletedStat').innerText=done;
-  if(document.getElementById('tasksRateStat'))document.getElementById('tasksRateStat').innerText=pct+'%';
-  const activeList=active.filter(t=>!t.done).sort((a,b)=>(b.pinned-a.pinned)||(b.createdAt-a.createdAt));
-  const completedList=active.filter(t=>t.done).sort((a,b)=>(b.pinned-a.pinned)||(b.createdAt-a.createdAt));
-  const activeEl=document.getElementById('activeTaskList'); if(activeEl)activeEl.innerHTML=activeList.length?activeList.map(t=>taskItemHtml(t,true)).join(''):'<div class="tasks-empty">Nothing pending — nice work.</div>';
-  const completedEl=document.getElementById('completedTaskList'); if(completedEl)completedEl.innerHTML=completedList.length?completedList.map(t=>taskItemHtml(t,true)).join(''):'<div class="tasks-empty">Completed tasks will land here once you check them off.</div>';
-  if(document.getElementById('activeTasksCount'))document.getElementById('activeTasksCount').innerText=activeList.length;
-  if(document.getElementById('completedTasksCount'))document.getElementById('completedTasksCount').innerText=completedList.length;
-  const dl=document.getElementById('taskProjectOptions'); if(dl){const projectNames=[...new Set(tasks.filter(t=>!t.archived).map(t=>t.project).filter(Boolean))];dl.innerHTML=projectNames.map(p=>`<option value="${escapeHtml(p)}">`).join('');}
-  renderArchivedTasks();
+  const total = tasks.length;
+  const done = tasks.filter(t=>t.done).length;
+  const pending = total - done;
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  if(document.getElementById('tasksTotalStat')) document.getElementById('tasksTotalStat').innerText = total;
+  if(document.getElementById('tasksPendingStat')) document.getElementById('tasksPendingStat').innerText = pending;
+  if(document.getElementById('tasksCompletedStat')) document.getElementById('tasksCompletedStat').innerText = done;
+  if(document.getElementById('tasksRateStat')) document.getElementById('tasksRateStat').innerText = pct + '%';
+
+  const activeList = tasks.filter(t=>!t.done).sort((a,b)=>b.createdAt-a.createdAt);
+  const completedList = tasks.filter(t=>t.done).sort((a,b)=>b.createdAt-a.createdAt);
+
+  const activeEl = document.getElementById('activeTaskList');
+  if(activeEl) activeEl.innerHTML = activeList.length ? activeList.map(t=>taskItemHtml(t,true)).join('') : '<div class="tasks-empty">Nothing pending — nice work.</div>';
+
+  const completedEl = document.getElementById('completedTaskList');
+  if(completedEl) completedEl.innerHTML = completedList.length ? completedList.map(t=>taskItemHtml(t,true)).join('') : '<div class="tasks-empty">Completed tasks will land here once you check them off.</div>';
+
+  if(document.getElementById('activeTasksCount')) document.getElementById('activeTasksCount').innerText = activeList.length;
+  if(document.getElementById('completedTasksCount')) document.getElementById('completedTasksCount').innerText = completedList.length;
+
+  const dl = document.getElementById('taskProjectOptions');
+  if(dl){
+    const projectNames = [...new Set(tasks.map(t=>t.project).filter(Boolean))];
+    dl.innerHTML = projectNames.map(p=>`<option value="${escapeHtml(p)}">`).join('');
+  }
 }
 
-function renderArchivedTasks(){
-  const grid=document.getElementById('archivedTasksGrid'),count=document.getElementById('archivedTasksCount'); if(!grid)return;
+function toggleTaskDone(id){
   loadTasks();
-  const archived=tasks.filter(t=>t.archived).sort((a,b)=>b.createdAt-a.createdAt);
-  if(count)count.innerText=archived.length;
-  grid.innerHTML=archived.length?archived.map(t=>`<div class="tasks-panel archived-task-card"><div class="task-list">${taskItemHtml(t,true)}</div><div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="blur-btn" onclick="restoreTask('${t.id}')">Restore Task</button></div></div>`).join(''):'<div class="notes-empty" style="grid-column:1/-1;">No tasks have been archived yet.</div>';
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  t.done = !t.done;
+  saveTasks();
+  renderTasksPanel();
+  renderTasksPage();
 }
 
-function toggleArchivedTasks(){
-  const card=document.getElementById('tasksArchiveCard'),grid=document.getElementById('archivedTasksGrid'); if(!card||!grid)return;
-  const open=grid.classList.toggle('open'); card.classList.toggle('open',open); if(open)renderArchivedTasks();
+function addTask(){
+  const textInput = document.getElementById('newTaskText');
+  const projInput = document.getElementById('newTaskProj');
+  const text = textInput.value.trim();
+  if(!text){ textInput.focus(); return; }
+  const project = projInput.value.trim();
+  loadTasks();
+  tasks.push({id:genId('TSK'), text, project, done:false, createdAt:Date.now()});
+  saveTasks();
+  textInput.value = '';
+  projInput.value = '';
+  renderTasksPanel();
+  renderTasksPage();
+  textInput.focus();
 }
 
-function toggleTaskDone(id){loadTasks();const t=tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;saveTasks();renderTasksPanel();renderTasksPage();}
-function toggleTaskPin(id){loadTasks();const t=tasks.find(x=>x.id===id);if(!t)return;t.pinned=!t.pinned;saveTasks();renderTasksPanel();renderTasksPage();}
-function archiveTask(id){loadTasks();const t=tasks.find(x=>x.id===id);if(!t)return;t.archived=true;t.pinned=false;saveTasks();renderTasksPanel();renderTasksPage();}
-function restoreTask(id){loadTasks();const t=tasks.find(x=>x.id===id);if(!t)return;t.archived=false;saveTasks();renderTasksPanel();renderTasksPage();renderArchivedTasks();}
-function addTask(){const textInput=document.getElementById('newTaskText'),projInput=document.getElementById('newTaskProj');const text=textInput.value.trim();if(!text){textInput.focus();return;}const project=projInput.value.trim();loadTasks();tasks.push({id:genId('TSK'),text,project,done:false,createdAt:Date.now(),archived:false,pinned:false});saveTasks();textInput.value='';projInput.value='';renderTasksPanel();renderTasksPage();textInput.focus();}
-function deleteTask(id){loadTasks();tasks=tasks.filter(t=>t.id!==id);saveTasks();renderTasksPanel();renderTasksPage();renderArchivedTasks();}
+function deleteTask(id){
+  loadTasks();
+  tasks = tasks.filter(t=>t.id!==id);
+  saveTasks();
+  renderTasksPanel();
+  renderTasksPage();
+}
 
 /* -------------------------
    Live clock
@@ -3265,29 +3187,25 @@ function openClientModal(e, nameEscaped){
   if(e) e.stopPropagation();
   const name = unescapeHtml(nameEscaped);
   const meta = (window.clientMeta && window.clientMeta[name]) ? window.clientMeta[name] : {};
-  const dc = dashboardCustomers.find(c=>c.name===name) || {};
-  const serviceProvided = meta.serviceProvided || dc.services || meta.service || '';
-  const revenueValue = typeof meta.revenue === 'number' ? meta.revenue : 0;
+  const clientProjects = projects.filter(p=>p.client === name);
+  const clientOrders = orders.filter(o=>o.client === name);
+  const computedRevenue = clientOrders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
+  const revenueValue = (typeof meta.revenue === 'number') ? meta.revenue : computedRevenue;
   document.getElementById('modalTitle').innerText = name;
-  document.getElementById('modalMeta').innerText = 'Customer workspace';
+  document.getElementById('modalMeta').innerText = 'Customer record';
   const body = document.getElementById('modalBody');
   body.innerHTML = `
-    <div class="kv">Customer Name</div><input type="text" id="wsClientName" value="${escapeHtml(name)}" style="width:100%;margin-bottom:8px;">
-    <div class="kv">Website</div><input type="text" id="wsClientWebsite" value="${escapeHtml(meta.website || dc.website || '')}" style="width:100%;margin-bottom:8px;">
-    <div class="kv">Phone</div><input type="text" id="wsClientPhone" value="${escapeHtml(meta.phone || dc.phone || '')}" style="width:100%;margin-bottom:8px;">
-    <div class="kv">Email</div><input type="text" id="wsClientEmail" value="${escapeHtml(meta.email || dc.email || '')}" style="width:100%;margin-bottom:8px;">
-    <div class="workspace-service-box">
-      <div class="kv">Service Provided</div>
-      <input type="text" id="wsClientServiceProvided" value="${escapeHtml(serviceProvided)}" placeholder="e.g. Website development, SEO, chatbot" style="width:100%;margin-top:6px;">
-    </div>
-    <div class="kv" style="margin-top:12px;">Total Revenue (R)</div><input type="number" id="wsClientRevenue" value="${revenueValue}" min="0" step="0.01" style="width:100%;margin-bottom:8px;">
-    <div style="color:var(--muted);font-size:12px;margin:-4px 0 8px 0;">This amount is the customer's saved total and is included in the Workspaces Total Revenue.</div>
-    <div class="kv">Notes</div><textarea id="wsClientNotes" rows="4" style="width:100%;margin-top:6px;">${escapeHtml(meta.notes || dc.notes || '')}</textarea>
+    <div class="kv">Customer Name</div><input type="text" id="wsClientName" value="${escapeHtml(name)}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Website</div><input type="text" id="wsClientWebsite" value="${escapeHtml(meta.website || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Phone</div><input type="text" id="wsClientPhone" value="${escapeHtml(meta.phone || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Email</div><input type="text" id="wsClientEmail" value="${escapeHtml(meta.email || '')}" style="width:100%; margin-bottom:8px;">
+    <div class="kv">Total Revenue (R)</div><input type="number" id="wsClientRevenue" value="${revenueValue}" min="0" step="0.01" style="width:100%; margin-bottom:8px;">
+    <div style="color:var(--muted); font-size:12px; margin:-4px 0 8px 0;">Auto-calculated from shipped orders is R${computedRevenue.toFixed(2)} — override above if needed.</div>
+    <div class="kv">Projects (${clientProjects.length})</div><div style="margin-bottom:8px;">${clientProjects.length ? clientProjects.map(p=>`${escapeHtml(p.service)} • ${p.status}`).join('<br>') : 'No projects'}</div>
+    <div class="kv">Orders (${clientOrders.length})</div><div style="margin-bottom:8px; color:var(--muted)">${clientOrders.length ? clientOrders.map(o=>`${o.id} • ${escapeHtml(o.item)} • ${o.status}`).join('<br>') : 'No orders'}</div>
+    <div class="kv">Notes</div><textarea id="wsClientNotes" rows="4" style="width:100%; margin-top:6px;">${escapeHtml(meta.notes || '')}</textarea>
   `;
-  document.getElementById('modalFooter').innerHTML = `
-    <button class="btn-danger" onclick="deleteWorkspaceCustomerFromModal()">Delete Customer</button>
-    <button onclick="saveClientModal('${escapeHtml(name)}')">Save</button>
-  `;
+  document.getElementById('modalFooter').innerHTML = `<button onclick="saveClientModal('${escapeHtml(name)}')">Save</button>`;
   document.getElementById('modalBackdrop').style.display = 'flex';
 }
 
@@ -3298,7 +3216,6 @@ function saveClientModal(nameEscaped){
   const website = get('wsClientWebsite');
   const phone = get('wsClientPhone');
   const email = get('wsClientEmail');
-  const serviceProvided = get('wsClientServiceProvided');
   const notes = get('wsClientNotes');
   const revenue = Number(document.getElementById('wsClientRevenue')?.value) || 0;
 
@@ -3307,10 +3224,8 @@ function saveClientModal(nameEscaped){
   meta.website = website;
   meta.phone = phone;
   meta.email = email;
-  meta.serviceProvided = serviceProvided;
   meta.notes = notes;
   meta.revenue = revenue;
-  meta.files = Array.isArray(meta.files) ? meta.files : [];
 
   if(newName !== name){
     clients.delete(name);
@@ -3320,178 +3235,16 @@ function saveClientModal(nameEscaped){
     delete window.clientMeta[name];
     window.clientMeta[newName] = meta;
     const dc = dashboardCustomers.find(c=>c.name === name);
-    if(dc){ dc.name = newName; dc.website=website; dc.phone=phone; dc.email=email; dc.services=serviceProvided; dc.notes=notes; }
+    if(dc) dc.name = newName;
   } else {
     window.clientMeta[name] = meta;
-    const dc = dashboardCustomers.find(c=>c.name === name);
-    if(dc){ dc.website=website; dc.phone=phone; dc.email=email; dc.services=serviceProvided; dc.notes=notes; }
   }
 
   renderAll();
   renderWorkspaces();
-  renderTargetCustomers();
   saveDashboardState();
   if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
   closeModal();
-}
-
-function deleteWorkspaceCustomerFromModal(){
-  const title=(document.getElementById('modalTitle')?.innerText||'').trim();
-  if(!title) return;
-  const name=title;
-  if(!confirm(`Delete customer "${name}" and all associated workspace data?`)) return;
-  clients.delete(name);
-  projects = projects.filter(p=>p.client !== name);
-  orders = orders.filter(o=>o.client !== name);
-  dashboardCustomers = dashboardCustomers.filter(c=>c.name !== name);
-  if(window.clientMeta) delete window.clientMeta[name];
-  renderAll();
-  renderWorkspaces();
-  renderTargetCustomers();
-  saveDashboardState();
-  if(typeof oosScheduleAutoSave === 'function') oosScheduleAutoSave();
-  closeModal();
-}
-
-
-const TARGET_CUSTOMERS = [
-  {name:'IridescenceSA', logo:'Iridescence.jpeg', website:'https://iridescencesa.co.za'},
-  {name:'Hudini Plumbing', logo:'Hudini_1.jpeg', website:'https://hudiniplumbing.co.za'},
-  {name:'Satchwell', logo:'Satchwell_1.jpeg', website:''}
-];
-
-function ensureTargetCustomerRecords(){
-  if(!window.clientMeta) window.clientMeta={};
-  TARGET_CUSTOMERS.forEach(c=>{
-    const meta=getCustomerMeta(c.name);
-    if(typeof meta.revenue!=='number') meta.revenue=0;
-    if(!Array.isArray(meta.files)) meta.files=[];
-    if(!meta.website && c.website) meta.website=c.website;
-    if(!meta.paymentStatus) meta.paymentStatus='Not Set';
-  });
-}
-
-function renderTargetCustomerFiles(name){
-  const meta=getCustomerMeta(name);
-  const files=Array.isArray(meta.files)?meta.files:[];
-  if(!files.length) return '<div class="target-files-empty">No documents uploaded yet.</div>';
-  return files.map((f,i)=>`
-    <div class="target-file-row">
-      <a class="target-file-name" href="${escapeHtml(f.url||'#')}" target="_blank" rel="noopener" title="${escapeHtml(f.name||'Document')}">${escapeHtml(f.name||'Document')}</a>
-      <button class="target-file-delete" title="Delete file" onclick="deleteCustomerFile(event,'${escapeHtml(name)}',${i})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-      </button>
-    </div>`).join('');
-}
-
-function renderTargetCustomers(){
-  const grid=document.getElementById('targetCustomerGrid');
-  if(!grid) return;
-  ensureTargetCustomerRecords();
-  grid.innerHTML=TARGET_CUSTOMERS.map((c,i)=>{
-    const meta=getCustomerMeta(c.name);
-    return `
-      <div class="target-customer-card">
-        <div class="target-customer-head">
-          <div class="target-customer-logo"><img src="${escapeHtml(c.logo)}" alt="${escapeHtml(c.name)} logo"></div>
-          <div>
-            <div class="target-customer-title">${escapeHtml(c.name)}</div>
-            <div class="target-customer-sub">Customer financial record</div>
-          </div>
-        </div>
-        <div class="target-field"><label>Total Revenue (R)</label><input type="number" id="targetRevenue_${i}" value="${Number(meta.revenue)||0}" min="0" step="0.01"></div>
-        <div class="target-field"><label>Next Payment Due (R)</label><input type="number" id="targetPaymentDue_${i}" value="${Number(meta.nextPaymentDue)||0}" min="0" step="0.01"></div>
-        <div class="target-field"><label>Next Payment Date</label><input type="date" id="targetPaymentDate_${i}" value="${escapeHtml(meta.nextPaymentDate||'')}"></div>
-        <div class="target-field"><label>Payment Status</label>
-          <select id="targetPaymentStatus_${i}">
-            ${['Not Set','Pending','Partially Paid','Paid','Overdue'].map(v=>`<option value="${v}" ${meta.paymentStatus===v?'selected':''}>${v}</option>`).join('')}
-          </select>
-        </div>
-        <div class="target-field"><label>Notes</label><textarea id="targetPaymentNotes_${i}" rows="2" placeholder="Payment notes, invoice references, etc.">${escapeHtml(meta.paymentNotes||'')}</textarea></div>
-        <button class="btn-glow target-customer-save" onclick="saveTargetCustomer(${i})">Save ${escapeHtml(c.name)}</button>
-        <div class="target-files">
-          <div class="target-files-head">
-            <div class="target-files-title">Payments, Invoices &amp; Quotations</div>
-            <input type="file" id="targetFileInput_${i}" multiple style="display:none" onchange="uploadCustomerFiles(${i})" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xls,.xlsx,.csv,.txt">
-            <button class="target-file-btn" onclick="document.getElementById('targetFileInput_${i}').click()">Upload Files</button>
-          </div>
-          <div id="targetFileList_${i}" class="target-file-list">${renderTargetCustomerFiles(c.name)}</div>
-          <div id="targetFileStatus_${i}" class="target-file-status"></div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function saveTargetCustomer(i){
-  const c=TARGET_CUSTOMERS[i];
-  if(!c) return;
-  const meta=getCustomerMeta(c.name);
-  meta.revenue=Number(document.getElementById(`targetRevenue_${i}`)?.value)||0;
-  meta.nextPaymentDue=Number(document.getElementById(`targetPaymentDue_${i}`)?.value)||0;
-  meta.nextPaymentDate=document.getElementById(`targetPaymentDate_${i}`)?.value||'';
-  meta.paymentStatus=document.getElementById(`targetPaymentStatus_${i}`)?.value||'Not Set';
-  meta.paymentNotes=document.getElementById(`targetPaymentNotes_${i}`)?.value.trim()||'';
-  meta.files=Array.isArray(meta.files)?meta.files:[];
-  saveDashboardState();
-  renderWorkspaces();
-  renderTargetCustomers();
-  if(typeof oosScheduleAutoSave==='function') oosScheduleAutoSave();
-  if(typeof oosSetSaveStatus==='function') oosSetSaveStatus('saving','Saving…');
-}
-
-function customerFileSafeName(name){
-  return String(name).replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'')||'customer';
-}
-
-async function uploadCustomerFiles(i){
-  const c=TARGET_CUSTOMERS[i];
-  const input=document.getElementById(`targetFileInput_${i}`);
-  const status=document.getElementById(`targetFileStatus_${i}`);
-  if(!c||!input||!input.files||!input.files.length) return;
-  if(!oosCurrentUser){ if(status) status.textContent='Please sign in before uploading files.'; return; }
-  const meta=getCustomerMeta(c.name);
-  meta.files=Array.isArray(meta.files)?meta.files:[];
-  const files=Array.from(input.files);
-  if(status) status.textContent=`Uploading ${files.length} file${files.length===1?'':'s'}…`;
-  try{
-    for(const file of files){
-      if(file.size>20*1024*1024) throw new Error(`${file.name} is larger than 20 MB.`);
-      const safeName=String(file.name).replace(/[^a-zA-Z0-9._-]+/g,'_');
-      const path=`customerFiles/${customerFileSafeName(c.name)}/${Date.now()}_${safeName}`;
-      const ref=oosStorage.ref(path);
-      const snap=await ref.put(file,{contentType:file.type||'application/octet-stream',customMetadata:{customer:c.name,uploadedBy:oosCurrentUser.email||''}});
-      const url=await snap.ref.getDownloadURL();
-      meta.files.push({name:file.name,url,path,size:file.size,type:file.type||'',uploadedAt:new Date().toISOString()});
-    }
-    saveDashboardState();
-    renderTargetCustomers();
-    if(typeof oosScheduleAutoSave==='function') oosScheduleAutoSave();
-    if(status) status.textContent='Files uploaded and saved.';
-  }catch(err){
-    console.error('Customer file upload failed:',err);
-    if(status) status.textContent=`Upload failed: ${err.message||err}`;
-  }finally{
-    input.value='';
-  }
-}
-
-async function deleteCustomerFile(e,name,i){
-  if(e) e.stopPropagation();
-  const meta=getCustomerMeta(name), files=Array.isArray(meta.files)?meta.files:[];
-  const file=files[i];
-  if(!file) return;
-  if(!confirm(`Delete "${file.name}"?`)) return;
-  try{
-    if(file.path) await oosStorage.ref(file.path).delete();
-  }catch(err){
-    console.error('Customer file delete failed:',err);
-    // Continue removing stale metadata when the Storage object is already gone.
-  }
-  files.splice(i,1);
-  meta.files=files;
-  saveDashboardState();
-  renderTargetCustomers();
-  if(typeof oosScheduleAutoSave==='function') oosScheduleAutoSave();
 }
 
 /* -------------------------
@@ -3557,8 +3310,6 @@ function renderAll(){
   renderOrders();
   renderClients();
   renderCalendar();
-  renderWorkspaces();
-  renderTargetCustomers();
   saveDashboardState();
 }
 
@@ -3767,43 +3518,6 @@ function deleteDashboardCustomerFromModal(){
   closeModal();
 }
 
-function getCustomerMeta(name){
-  if(!window.clientMeta) window.clientMeta={};
-  if(!window.clientMeta[name]) window.clientMeta[name]={};
-  return window.clientMeta[name];
-}
-
-function getCustomerRevenue(name){
-  const meta=getCustomerMeta(name);
-  return typeof meta.revenue === 'number' ? meta.revenue : 0;
-}
-
-function getCombinedCustomerRevenue(){
-  return Array.from(clients).reduce((sum,name)=>sum+getCustomerRevenue(name),0);
-}
-
-function toggleWorkspaceTotalRevenueBlur(e){
-  if(e) e.stopPropagation();
-  const value=document.getElementById('wsRevenueStat');
-  const btn=document.getElementById('wsTotalRevenueBlurBtn');
-  if(!value) return;
-  value.classList.toggle('blurred');
-  if(btn) btn.innerText=value.classList.contains('blurred')?'Unblur':'Blur';
-}
-
-function toggleWorkspaceCustomerRevenueEye(e,i){
-  if(e) e.stopPropagation();
-  const value=document.getElementById(`wsRevenue_${i}`);
-  const btn=document.getElementById(`wsEye_${i}`);
-  if(!value||!btn)return;
-  const hidden=value.classList.toggle('blurred');
-  btn.title=hidden?'Show revenue':'Hide revenue';
-  btn.setAttribute('aria-label',hidden?'Show revenue':'Hide revenue');
-  btn.innerHTML=hidden
-    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.3A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a19.3 19.3 0 0 1-3.1 3.9"/><path d="M6.1 6.1C3.4 8.1 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"/></svg>'
-    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg>';
-}
-
 function renderWorkspaces(){
   const grid = document.getElementById('workspacesGrid');
   renderDashboardCustomers();
@@ -3812,7 +3526,7 @@ function renderWorkspaces(){
   if(document.getElementById('wsTotalStat')) document.getElementById('wsTotalStat').innerText = clients.size;
   if(document.getElementById('wsProjectsStat')) document.getElementById('wsProjectsStat').innerText = projects.length;
   if(document.getElementById('wsOrdersStat')) document.getElementById('wsOrdersStat').innerText = orders.length;
-  const totalRevenue = getCombinedCustomerRevenue();
+  const totalRevenue = orders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
   if(document.getElementById('wsRevenueStat')) document.getElementById('wsRevenueStat').innerText = fmtCurrency(totalRevenue);
 
   const avatarGradients = [
@@ -3832,34 +3546,27 @@ function renderWorkspaces(){
 
   grid.innerHTML = names.map((name,i)=>{
     const clientProjects = projects.filter(p=>p.client===name);
+    const clientOrders = orders.filter(o=>o.client===name);
     const completed = clientProjects.filter(p=>p.status==='Completed').length;
     const pct = clientProjects.length ? Math.round((completed/clientProjects.length)*100) : 0;
-    const revenue = getCustomerRevenue(name);
+    const clientMetaEntry = (window.clientMeta && window.clientMeta[name]) ? window.clientMeta[name] : {};
+    const computedRevenue = clientOrders.filter(o=>o.status==='Shipped').reduce((s,o)=>s+(Number(o.price)||0),0);
+    const revenue = (typeof clientMetaEntry.revenue === 'number') ? clientMetaEntry.revenue : computedRevenue;
     const initials = name.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
     const grad = avatarGradients[i % avatarGradients.length];
     return `
       <div class="workspace-card" onclick="openClientModal(event,'${escapeHtml(name)}')">
         <div class="workspace-head">
           <div class="workspace-avatar" style="background:${grad};">${escapeHtml(initials)}</div>
-          <div style="min-width:0;flex:1;">
-            <div class="workspace-name-row">
-              <div class="workspace-name">${escapeHtml(name)}</div>
-              <button class="workspace-eye-btn" id="wsEye_${i}" onclick="toggleWorkspaceCustomerRevenueEye(event,${i})" title="Show revenue" aria-label="Show revenue">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg>
-              </button>
-            </div>
+          <div>
+            <div class="workspace-name">${escapeHtml(name)}</div>
             <div class="workspace-status">${clientProjects.length ? clientProjects.length + ' project' + (clientProjects.length===1?'':'s') : 'No active projects'}</div>
           </div>
         </div>
         <div class="workspace-stats">
           <div class="workspace-stat"><div class="num">${clientProjects.length}</div><div class="label">Projects</div></div>
-          <div class="workspace-stat"><div class="num">${orders.filter(o=>o.client===name).length}</div><div class="label">Orders</div></div>
-          <div class="workspace-stat revenue-stat">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <div class="num workspace-revenue-value blurred" id="wsRevenue_${i}">${fmtCurrency(revenue)}</div>
-            </div>
-            <div class="label">Revenue</div>
-          </div>
+          <div class="workspace-stat"><div class="num">${clientOrders.length}</div><div class="label">Orders</div></div>
+          <div class="workspace-stat"><div class="num">${fmtCurrency(revenue)}</div><div class="label">Revenue</div></div>
         </div>
         <div>
           <div class="workspace-progress-top"><span>Progress</span><span>${pct}%</span></div>
@@ -3956,7 +3663,7 @@ function oosSetSaveStatus(state, text){
   label.textContent=text;
 }
 function oosBuildSnapshot(){
-  return {version:3,savedAt:new Date().toISOString(),theme:dashboardThemeLighter?'lighter':'dark',dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,lifetimeTarget,lifetimeActual,dashboardCustomers:oosStripDefaultLogosForSync(dashboardCustomers)},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
+  return {version:3,savedAt:new Date().toISOString(),dashboard:{orders,projects,clients:Array.from(clients),clientMeta:window.clientMeta||{},monthlyTarget,lifetimeTarget,lifetimeActual,dashboardCustomers:oosStripDefaultLogosForSync(dashboardCustomers)},notes:(typeof notes!=='undefined'?notes:[]),tasks:(typeof tasks!=='undefined'?tasks:[]),calendar:(typeof loadCalEvents==='function'?loadCalEvents():{}),analytics:(typeof gaProfiles!=='undefined'?gaProfiles.map(p=>({name:p.name,lookerUrl:p.lookerUrl||''})):[])};
 }
 function oosCacheSnapshot(snapshot){
   try{localStorage.setItem(OOS_AUTOSAVE_KEY,JSON.stringify(snapshot));saveDashboardState();if(typeof saveNotes==='function')saveNotes();if(typeof saveTasks==='function')saveTasks();}catch(err){console.error('OutofSight local cache failed',err);}
@@ -4041,27 +3748,6 @@ const OOS_ALLOWED_EMAILS=['hallo.outofsight@gmail.com','jaidonvermeulen@gmail.co
 // unmodified. Whichever of the allowed accounts matches the entered
 // password is used.
 const OOS_LOGIN_EMAILS=['jaidonvermeulen@gmail.com','hallo.outofsight@gmail.com'];
-let dashboardThemeLighter=false;
-function applyDashboardTheme(lighter, persist=true){
-  dashboardThemeLighter=!!lighter;
-  document.body.classList.toggle('theme-lighter',dashboardThemeLighter);
-  const toggle=document.getElementById('securityThemeToggle');
-  const text=document.getElementById('securityThemeText');
-  if(toggle){toggle.classList.toggle('is-on',dashboardThemeLighter);toggle.setAttribute('aria-checked',String(dashboardThemeLighter));}
-  if(text)text.innerText=dashboardThemeLighter?'Lighter':'Dark';
-  if(persist){
-    try{localStorage.setItem('outofsight_theme',dashboardThemeLighter?'lighter':'dark');}catch(e){}
-    if(typeof oosScheduleAutoSave==='function' && oosUnlocked) oosScheduleAutoSave();
-  }
-}
-function toggleDashboardTheme(){applyDashboardTheme(!dashboardThemeLighter,true);}
-function loadDashboardTheme(){
-  let lighter=false;
-  try{lighter=localStorage.getItem('outofsight_theme')==='lighter';}catch(e){}
-  applyDashboardTheme(lighter,false);
-}
-loadDashboardTheme();
-
 function oosStatus(msg,type=''){const el=document.getElementById('securityStatus');if(el){el.textContent=msg;el.className='security-status '+type;el.style.whiteSpace='pre-line';}}
 function oosFriendlyFirebaseError(err, stage='authentication'){
   const code=err&&err.code?err.code:'';
@@ -4133,7 +3819,6 @@ async function oosLoadFromCloud(){
         }catch(parseErr){
           throw new Error('Firestore contains a dashboard state that cannot be read as JSON.');
         }
-        if(cloudSnapshot.theme) applyDashboardTheme(cloudSnapshot.theme==='lighter',false);
         if(cloudSnapshot.dashboard) localStorage.setItem('outofsight_dashboard_state',JSON.stringify(cloudSnapshot.dashboard));
         if(cloudSnapshot.notes) localStorage.setItem('outofsight_notes',JSON.stringify(cloudSnapshot.notes));
         if(cloudSnapshot.tasks) localStorage.setItem('outofsight_tasks',JSON.stringify(cloudSnapshot.tasks));
